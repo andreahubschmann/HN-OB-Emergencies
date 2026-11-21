@@ -613,8 +613,8 @@ function filt(q){q=q.toLowerCase();document.querySelectorAll('#g .tile').forEach
 
 function renderModule(m){
   document.getElementById('hTitle').textContent=m.title;
-  const mode=state.mode[m.id]||'guided';
-  const tabs=`<div class="mtabs"><button class="${mode==='guided'?'on':''}" onclick="setMode('${m.id}','guided')">Step by step</button><button class="${mode==='full'?'on':''}" onclick="setMode('${m.id}','full')">Full protocol</button></div>`;
+  const mode=state.mode[m.id]||'full';
+  const tabs=`<div class="mtabs"><button class="${mode==='full'?'on':''}" onclick="setMode('${m.id}','full')">Full protocol</button><button class="${mode==='guided'?'on':''}" onclick="setMode('${m.id}','guided')">Step by step</button></div>`;
   if(mode==='guided'){V.innerHTML=tabs+renderGuided(m);return;}
   const c=CODES[m.code];
   let html=tabs+`<div class="mod-head"><h2>${m.title}</h2></div>
