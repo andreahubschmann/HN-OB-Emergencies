@@ -68,7 +68,7 @@ header{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;paddin
 .clock .tm{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--navy);min-width:92px}
 .clock .lb{font-size:11px;color:var(--mut);flex:1;line-height:1.2}
 .clock button{border:0;border-radius:8px;padding:10px 12px;font:inherit;font-weight:700;font-size:14px}
-.b-go{background:var(--teal);color:#fff}.b-gray{background:#E7E9ED;color:#222}
+.b-stop{background:var(--obe);color:#fff}.b-go{background:var(--teal);color:#fff}.b-gray{background:#E7E9ED;color:#222}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;display:none;align-items:flex-end;justify-content:center}
 .overlay.on{display:flex}
 .sheet{background:#fff;width:100%;max-width:560px;border-radius:16px 16px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
@@ -588,7 +588,7 @@ function go(h){ if(location.hash!=='#'+h){ location.hash=h; } else render(); }
 window.addEventListener('hashchange',render);
 
 function fmt(ms){const s=Math.max(0,Math.floor(ms/1000));const m=Math.floor(s/60);return String(m).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
-function stamp(){return state.start? fmt(Date.now()-state.start) : new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});}
+function stamp(){return (state.start&&!state.stop)? fmt(Date.now()-state.start) : new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});}
 
 function render(){
   const h=location.hash.slice(1);
@@ -708,7 +708,7 @@ function confirmReset(){
   <button class="callbtn" style="background:var(--obe);border:0;width:100%;font:inherit;font-weight:800;font-size:18px" onclick="resetEvent()">Clear</button>
   <button class="callbtn" style="background:#E7E9ED;color:#222;border:0;width:100%;font:inherit;font-weight:800;font-size:18px" onclick="closeOv()">Cancel</button>`);
 }
-function resetEvent(){state.start=null;state.log=[];state.g={};save();closeOv();updClock();render();}
+function resetEvent(){state.start=null;state.stop=null;state.log=[];state.g={};save();closeOv();updClock();render();}
 
 function renderAbout(){
   document.getElementById('hTitle').textContent='About';
@@ -733,13 +733,14 @@ function openOv(h){document.getElementById('sheet').innerHTML=h;document.getElem
 function closeOv(){document.getElementById('ov').classList.remove('on'); if(M.find(x=>x.id===location.hash.slice(1))) render(); else document.getElementById('clock').style.display=state.start?'flex':document.getElementById('clock').style.display;}
 
 /* ---------- Event clock ---------- */
-function toggleClock(){ if(state.start){ confirmReset(); } else { state.start=Date.now(); state.log.push({k:'start-'+Date.now(),t:'00:00',txt:'Event clock started'}); save(); updClock(); } }
+function toggleClock(){ if(state.start&&!state.stop){ state.stop=Date.now(); state.log.push({k:'stop-'+Date.now(),t:fmt(state.stop-state.start),txt:'Event clock stopped'}); save(); updClock(); return; } if(state.start){ confirmReset(); } else { state.start=Date.now(); state.log.push({k:'start-'+Date.now(),t:'00:00',txt:'Event clock started'}); save(); updClock(); } }
 function updClock(){
   const tm=document.getElementById('tm'),lb=document.getElementById('clockLbl'),b=document.getElementById('clockBtn');
-  if(state.start){tm.textContent=fmt(Date.now()-state.start);lb.textContent='Elapsed since event start. Checked steps are time-stamped.';b.textContent='Reset';b.className='b-gray';}
+  if(state.start&&state.stop){tm.textContent=fmt(state.stop-state.start);lb.textContent='Event clock stopped. Clear to start a new event.';b.textContent='Clear';b.className='b-gray';}
+  else if(state.start){tm.textContent=fmt(Date.now()-state.start);lb.textContent='Elapsed since event start. Checked steps are time-stamped.';b.textContent='Stop';b.className='b-stop';}
   else{tm.textContent='00:00';lb.textContent='Event clock not started. Checked steps are time-stamped.';b.textContent='Start';b.className='b-go';}
 }
-setInterval(()=>{ if(state.start) document.getElementById('tm').textContent=fmt(Date.now()-state.start); },1000);
+setInterval(()=>{ if(state.start&&!state.stop) document.getElementById('tm').textContent=fmt(Date.now()-state.start); },1000);
 updClock(); render();
 try{ if('serviceWorker' in navigator && location.protocol==='https:') navigator.serviceWorker.register('sw.js'); }catch(e){}
 </script>
