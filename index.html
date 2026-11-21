@@ -141,6 +141,8 @@ const CODES = {
     when:"Obstetric hemorrhage anywhere in the hospital (most often LDRP and the ED). Activates the blood bank. Does not activate MTP.",team:null},
   pink:{name:"Code Pink",cls:"c-pink",color:"var(--pink)",
     when:"Delivery outside LDRP, or emergency team needed for a physician-unattended delivery in LDRP.",team:null},
+  rrt:{name:"Rapid Response Team",cls:"c-obe",color:"var(--obe)",
+    when:"Severe hypertension not controlled after the first-line algorithm. Dial 0, state location. "+PH("Confirm RRT activation process"),team:null},
   mtp:{name:"Massive Transfusion Protocol",cls:"c-mtp",color:"var(--mtp)",
     when:"Activated separately through the operator. Code Crimson does not activate MTP.",team:null}
 };
@@ -208,17 +210,17 @@ sections:[
    "Recheck BP in 10 min. If still severe: labetalol 40 mg IV over 2 min.",
    "Recheck BP in 10 min. If still severe: labetalol 80 mg IV over 2 min.",
    "Recheck BP in 10 min. If still severe: hydralazine 10 mg IV over 2 min.",
-   "Recheck BP in 20 min. If still severe: emergency consultation (MFM, anesthesiology or critical care)."],
+   "Recheck BP in 20 min. If still severe: call RRT (dial 0); emergency consultation (MFM, anesthesiology or critical care)."],
   "Hydralazine IV":[
    "Hydralazine 5 or 10 mg IV over 2 min.",
    "Recheck BP in 20 min. If still severe: hydralazine 10 mg IV over 2 min.",
    "Recheck BP in 20 min. If still severe: labetalol 20 mg IV over 2 min.",
-   "Recheck BP in 10 min. If still severe: labetalol 40 mg IV over 2 min and emergency consultation (MFM, anesthesiology or critical care)."],
+   "Recheck BP in 10 min. If still severe: labetalol 40 mg IV over 2 min; call RRT (dial 0); emergency consultation (MFM, anesthesiology or critical care)."],
   "Nifedipine IR PO":[
    "Nifedipine immediate-release 10 mg PO.",
    "Recheck BP in 20 min. If still severe: nifedipine IR 20 mg PO.",
    "Recheck BP in 20 min. If still severe: nifedipine IR 20 mg PO.",
-   "Recheck BP in 20 min. If still severe: labetalol 20 mg IV over 2 min and emergency consultation (MFM, anesthesiology or critical care)."]}},
+   "Recheck BP in 20 min. If still severe: labetalol 20 mg IV over 2 min; call RRT (dial 0); emergency consultation (MFM, anesthesiology or critical care)."]}},
  {type:"list",h:"After target BP achieved",items:[
   "BP every 10 min for 1 h, every 15 min for 1 h, every 30 min for 1 h, then every hour for 4 h.",
   "Labetalol: avoid with asthma, heart disease or congestive heart failure; may cause neonatal bradycardia.",
@@ -479,7 +481,8 @@ function htnChain(first){
     N.push({id:'w'+k,t:'wait',sec:d.wait,x:'Recheck BP'});
     N.push({id:'a'+k,t:'ask',q:'BP still \u2265 160 systolic or \u2265 110 diastolic?',y:(k<doses.length-1?'d'+(k+1):'esc'),no:'tgt'});
   });
-  N.push({id:'esc',t:'do',x:'Obtain emergency consultation: MFM, anesthesiology or critical care.',n:'Second-line therapy per consultant.',next:'mag'});
+  N.push({id:'esc',t:'do',x:'BP not controlled. Call RRT: dial 0, state location.',n:'Emergency consultation with MFM, anesthesiology or critical care for second-line therapy and level of care.',call:'rrt'});
+  N.push({id:'esc2',t:'do',x:'Continue BP every 10 min until consultant at bedside. Continue magnesium if indicated.',next:'mag'});
   N.push({id:'tgt',t:'do',x:'Target achieved. Monitor BP every 10 min for 1 h, every 15 min for 1 h, every 30 min for 1 h, then hourly for 4 h.',next:'mag'});
   N.push({id:'mag',t:'ask',q:'Preeclampsia with severe features?',y:'magy',no:'end'});
   N.push({id:'magy',t:'do',x:'Magnesium sulfate 4\u20136 g IV over 20\u201330 min, then 1\u20132 g/h.',n:'No IV: 10 g IM (5 g each buttock).',next:'end'});
@@ -518,8 +521,8 @@ const FLOWS={
   {id:'end',t:'end',x:'Hemorrhage sequence complete.'}]},
  htn:{pick:{
   'Labetalol IV':htnChain([{give:'Labetalol 20 mg IV over 2 min.',wait:600},{give:'Labetalol 40 mg IV over 2 min.',wait:600},{give:'Labetalol 80 mg IV over 2 min.',wait:600},{give:'Hydralazine 10 mg IV over 2 min.',wait:1200}]),
-  'Hydralazine IV':htnChain([{give:'Hydralazine 5 or 10 mg IV over 2 min.',wait:1200},{give:'Hydralazine 10 mg IV over 2 min.',wait:1200},{give:'Labetalol 20 mg IV over 2 min.',wait:600},{give:'Labetalol 40 mg IV over 2 min.',wait:0}]),
-  'Nifedipine IR PO':htnChain([{give:'Nifedipine immediate-release 10 mg PO.',wait:1200},{give:'Nifedipine IR 20 mg PO.',wait:1200},{give:'Nifedipine IR 20 mg PO.',wait:1200},{give:'Labetalol 20 mg IV over 2 min.',wait:0}])}},
+  'Hydralazine IV':htnChain([{give:'Hydralazine 5 or 10 mg IV over 2 min.',wait:1200},{give:'Hydralazine 10 mg IV over 2 min.',wait:1200},{give:'Labetalol 20 mg IV over 2 min.',wait:600},{give:'Labetalol 40 mg IV over 2 min. Call RRT now.',n:'ACOG: emergency consultation at this step.',wait:600}]),
+  'Nifedipine IR PO':htnChain([{give:'Nifedipine immediate-release 10 mg PO.',wait:1200},{give:'Nifedipine IR 20 mg PO.',wait:1200},{give:'Nifedipine IR 20 mg PO.',wait:1200},{give:'Labetalol 20 mg IV over 2 min. Call RRT now.',n:'ACOG: emergency consultation at this step.',wait:600}])}},
  sd:{nodes:[
   {id:'s1',t:'do',x:'Call for help: second obstetrician, anesthesia, neonatal team.',n:'Clock running = head-to-body interval.'},
   {id:'s2',t:'do',x:'Stop maternal pushing. No fundal pressure.'},
@@ -632,6 +635,27 @@ function renderModule(m){
   });
   V.innerHTML=html;
 }
+/* ---------- Alarm ---------- */
+let actx=null, alarmT=null, wakeL=null;
+function unlockAudio(){try{ if(navigator.audioSession) navigator.audioSession.type='playback';
+  actx=actx||new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==='suspended') actx.resume();
+  const b=actx.createBuffer(1,1,22050),src=actx.createBufferSource();src.buffer=b;src.connect(actx.destination);src.start(0);}catch(e){}}
+function beep(){try{ if(!actx) return; const t=actx.currentTime;
+  [0,0.3,0.6].forEach(o=>{const os=actx.createOscillator(),g=actx.createGain();os.type='square';os.frequency.value=960;g.gain.setValueAtTime(0.0001,t+o);g.gain.exponentialRampToValueAtTime(0.5,t+o+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+o+0.22);os.connect(g);g.connect(actx.destination);os.start(t+o);os.stop(t+o+0.25);});
+  try{navigator.vibrate&&navigator.vibrate([400,150,400]);}catch(e){} }catch(e){}}
+async function wakeOn(){try{ if('wakeLock' in navigator && !wakeL){ wakeL=await navigator.wakeLock.request('screen'); wakeL.addEventListener('release',()=>{wakeL=null;}); } }catch(e){}}
+function wakeOff(){try{ if(wakeL){wakeL.release();wakeL=null;} }catch(e){}}
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible' && Object.values(state.g||{}).some(g=>g&&g.waitEnd)) wakeOn(); });
+function startAlarm(id,txt){
+  stopAlarm(); beep(); alarmT=setInterval(beep,1600);
+  const m=M.find(x=>x.id===id);
+  openOv(`<h2 style="color:var(--obe);font-size:28px">\u23F0 ${txt.toUpperCase()}</h2><div class="script">${m?m.title:''}: time to recheck.</div>
+  <button class="callbtn" style="background:var(--obe);border:0;width:100%;font:inherit;font-weight:800;font-size:20px" onclick="ackAlarm('${id}')">Silence and open</button>`);
+}
+function stopAlarm(){ if(alarmT){clearInterval(alarmT);alarmT=null;} }
+function ackAlarm(id){ stopAlarm(); closeOv(); if(location.hash.slice(1)!==id){ state.mode[id]='guided'; save(); go(id);} }
+setInterval(()=>{ for(const id in (state.g||{})){ const g=state.g[id]; if(g&&g.waitEnd&&!g.alarmed&&Date.now()>=g.waitEnd){ g.alarmed=true; save(); const m=M.find(x=>x.id===id); const N=m?nodesFor(m):null; const n=N&&N.find(x=>x.id===g.cur); startAlarm(id,(n&&n.x)||'Recheck'); } } },500);
+
 function setMode(id,md){state.mode[id]=md;save();renderModule(M.find(x=>x.id===id));}
 let waitT=null;
 function gs(m){return state.g[m.id]||(state.g[m.id]={cur:null,hist:[]});}
@@ -648,31 +672,32 @@ function renderGuided(m){
   const hasDoses=m.sections.some(s=>s.type==='meds'||s.type==='algo');
   const extra=`<div class="grow">${g.hist.length?`<button class="gb sec" onclick="gBack('${m.id}')">\u2190 Back</button>`:''}${hasDoses?`<button class="gb sec" onclick="showDoses('${m.id}')">Doses</button>`:''}<button class="gb sec" onclick="gRestart('${m.id}')">Restart</button></div>`;
   let body='';
-  if(n.t==='do') body=`<div class="gnum">${n.hdr||m.title}${g.pick?' \u00b7 '+g.pick:''}</div><div class="gtxt">${n.x}</div>${n.n?`<div class="gnote">${n.n}</div>`:''}<div class="gbtns"><button class="gb" onclick="gNext('${m.id}',null,'Done')">Done \u2713</button>${extra}</div>`;
+  if(n.t==='do') body=`<div class="gnum">${n.hdr||m.title}${g.pick?' \u00b7 '+g.pick:''}</div><div class="gtxt">${n.x}</div>${n.n?`<div class="gnote">${n.n}</div>`:''}<div class="gbtns">${n.call?`<button class="gb yes" onclick="callCode('${n.call}')">CALL ${CODES[n.call].name.toUpperCase()}</button>`:''}<button class="gb" onclick="gNext('${m.id}',null,'Done')">Done \u2713</button>${extra}</div>`;
   if(n.t==='ask') body=`<div class="gnum">Decision</div><div class="gtxt gq">${n.q}</div><div class="gbtns"><div class="grow"><button class="gb yes" onclick="gNext('${m.id}','${n.y}','Yes')">YES</button><button class="gb no" onclick="gNext('${m.id}','${n.no}','No')">NO</button></div>${extra}</div>`;
   if(n.t==='wait'||n.t==='at'){
     if(n.t==='wait'&&!n.sec){ setTimeout(()=>gNext(m.id,null,'skip'),0); return ''; }
-    if(n.t==='wait'&&!g.waitEnd){g.waitEnd=Date.now()+n.sec*1000;save();}
     if(n.t==='at'&&!state.start){state.start=Date.now();save();updClock();}
-    const end=n.t==='wait'?g.waitEnd:state.start+n.sec*1000;
-    body=`<div class="gnum">${n.t==='wait'?'Timer':'Event clock'}</div><div class="gtxt">${n.x}</div><div class="gcount" id="gc">--:--</div><div class="gbtns"><button class="gb" onclick="gNext('${m.id}',null,'${n.t==='wait'?'Rechecked':'Reached'}')">${n.t==='wait'?'Recheck now':'Continue'}</button>${extra}</div>`;
-    const tick=()=>{const el=document.getElementById('gc'); if(!el){clearInterval(waitT);return;} const r=end-Date.now(); el.textContent=r>0?fmt(r):'NOW'; el.style.color=r>0?'var(--navy)':'var(--obe)'; if(r<=0&&!el.dataset.b){el.dataset.b=1;try{navigator.vibrate&&navigator.vibrate([300,150,300]);}catch(e){}}};
+    if(!g.waitEnd){g.waitEnd=(n.t==='wait'?Date.now()+n.sec*1000:state.start+n.sec*1000);g.alarmed=false;save();}
+    wakeOn();
+    const end=g.waitEnd;
+    body=`<div class="gnum">${n.t==='wait'?'Timer':'Event clock'}</div><div class="gtxt">${n.x}</div><div class="gcount" id="gc">--:--</div><div class="gnote" style="text-align:center">Alarm sounds at zero. Keep the app open and the screen on.</div><div class="gbtns"><button class="gb" onclick="gNext('${m.id}',null,'${n.t==='wait'?'Rechecked':'Reached'}')">${n.t==='wait'?'Recheck now':'Continue'}</button>${extra}</div>`;
+    const tick=()=>{const el=document.getElementById('gc'); if(!el){clearInterval(waitT);return;} const r=end-Date.now(); el.textContent=r>0?fmt(r):'NOW'; el.style.color=r>0?'var(--navy)':'var(--obe)'; };
     setTimeout(tick,0); waitT=setInterval(tick,500);
   }
   if(n.t==='end') body=`<div class="gnum">${m.title}</div><div class="gtxt gend">${n.x}</div><div class="gnote">Time-stamped steps are in the event log.</div><div class="gbtns"><button class="gb" onclick="go('log')">View event log</button>${extra}</div>`;
   return callBtn+`<div class="gcard"><div class="gprog"><i style="width:${pct}%"></i></div>${body}</div>`;
 }
-function pick(id,k){const m=M.find(x=>x.id===id);const g=gs(m);g.pick=k;g.cur=null;g.hist=[];logIt(m.title+': '+k+' algorithm selected');save();renderModule(m);}
+function pick(id,k){unlockAudio();const m=M.find(x=>x.id===id);const g=gs(m);g.pick=k;g.cur=null;g.hist=[];logIt(m.title+': '+k+' algorithm selected');save();renderModule(m);}
 function logIt(t){if(!state.start){state.start=Date.now();updClock();}state.log.push({k:'g-'+Date.now()+Math.random(),t:stamp(),txt:t});}
 function gNext(id,to,ans){
   const m=M.find(x=>x.id===id),g=gs(m),N=nodesFor(m),i=N.findIndex(n=>n.id===g.cur),n=N[i];
   if(ans!=='skip') logIt(n.t==='ask'? n.q+' '+ans.toUpperCase() : (n.t==='do'? n.x : n.x+' ('+ans+')'));
-  g.hist.push(g.cur); g.waitEnd=null;
+  unlockAudio(); stopAlarm(); g.hist.push(g.cur); g.waitEnd=null; g.alarmed=false; wakeOff();
   g.cur= to || n.next || (N[i+1]?N[i+1].id:'end');
   save(); renderModule(m); window.scrollTo(0,0);
 }
-function gBack(id){const m=M.find(x=>x.id===id),g=gs(m);if(g.hist.length){g.cur=g.hist.pop();g.waitEnd=null;save();renderModule(m);}}
-function gRestart(id){const m=M.find(x=>x.id===id);state.g[id]={cur:null,hist:[]};save();renderModule(m);}
+function gBack(id){const m=M.find(x=>x.id===id),g=gs(m);if(g.hist.length){stopAlarm();g.cur=g.hist.pop();g.waitEnd=null;g.alarmed=false;save();renderModule(m);}}
+function gRestart(id){stopAlarm();wakeOff();const m=M.find(x=>x.id===id);state.g[id]={cur:null,hist:[]};save();renderModule(m);}
 function showDoses(id){
   const m=M.find(x=>x.id===id);let h=`<h2>Doses</h2><div style="max-height:60vh;overflow:auto">`;
   m.sections.forEach(s=>{if(s.type==='meds')h+=`<div class="card"><h3>${s.h}</h3>${s.items.map(r=>`<div class="med"><div class="n">${r[0]}</div><div class="d">${r[1]}</div>${r[2]?`<div class="x">${r[2]}</div>`:''}</div>`).join('')}</div>`;
@@ -708,7 +733,7 @@ function confirmReset(){
   <button class="callbtn" style="background:var(--obe);border:0;width:100%;font:inherit;font-weight:800;font-size:18px" onclick="resetEvent()">Clear</button>
   <button class="callbtn" style="background:#E7E9ED;color:#222;border:0;width:100%;font:inherit;font-weight:800;font-size:18px" onclick="closeOv()">Cancel</button>`);
 }
-function resetEvent(){state.start=null;state.stop=null;state.log=[];state.g={};save();closeOv();updClock();render();}
+function resetEvent(){stopAlarm();wakeOff();state.start=null;state.stop=null;state.log=[];state.g={};save();closeOv();updClock();render();}
 
 function renderAbout(){
   document.getElementById('hTitle').textContent='About';
@@ -719,6 +744,7 @@ function renderAbout(){
 
 /* ---------- Code call sheet ---------- */
 function callCode(k){
+  unlockAudio();
   const c=CODES[k];
   openOv(`<h2 style="color:${c.color}">${c.name}</h2>
   <div class="small">Hospital phone: dial <b>0</b>. Cell phone: tap below.</div>
@@ -733,7 +759,7 @@ function openOv(h){document.getElementById('sheet').innerHTML=h;document.getElem
 function closeOv(){document.getElementById('ov').classList.remove('on'); if(M.find(x=>x.id===location.hash.slice(1))) render(); else document.getElementById('clock').style.display=state.start?'flex':document.getElementById('clock').style.display;}
 
 /* ---------- Event clock ---------- */
-function toggleClock(){ if(state.start&&!state.stop){ state.stop=Date.now(); state.log.push({k:'stop-'+Date.now(),t:fmt(state.stop-state.start),txt:'Event clock stopped'}); save(); updClock(); return; } if(state.start){ confirmReset(); } else { state.start=Date.now(); state.log.push({k:'start-'+Date.now(),t:'00:00',txt:'Event clock started'}); save(); updClock(); } }
+function toggleClock(){ unlockAudio(); if(state.start&&!state.stop){ state.stop=Date.now(); state.log.push({k:'stop-'+Date.now(),t:fmt(state.stop-state.start),txt:'Event clock stopped'}); save(); updClock(); return; } if(state.start){ confirmReset(); } else { state.start=Date.now(); state.log.push({k:'start-'+Date.now(),t:'00:00',txt:'Event clock started'}); save(); updClock(); } }
 function updClock(){
   const tm=document.getElementById('tm'),lb=document.getElementById('clockLbl'),b=document.getElementById('clockBtn');
   if(state.start&&state.stop){tm.textContent=fmt(state.stop-state.start);lb.textContent='Event clock stopped. Clear to start a new event.';b.textContent='Clear';b.className='b-gray';}
