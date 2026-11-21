@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1B3456">
+<title>Holy Name OB Emergencies</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="HN OB Emergencies">
+<style>
+:root{--navy:#1B3456;--teal:#3E8680;--obe:#C0392B;--crimson:#8B0A1A;--pink:#C2185B;--mtp:#5B2C6F;--bg:#F4F5F7;--ink:#111;--mut:#5A6270;--line:#DADDE2;--ph:#FFF3C4}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:1.4}
+header{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding:10px 12px 8px}
+.hrow{display:flex;align-items:center;gap:8px}
+.hrow h1{font-size:17px;margin:0;flex:1;font-weight:700;letter-spacing:.2px}
+.hbtn{background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:8px;padding:8px 10px;font:inherit;font-size:14px;font-weight:700}
+.disc{background:#FFE8A3;color:#3D2E00;font-size:12px;padding:6px 12px;text-align:center;font-weight:700}
+.codes{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 12px}
+.code{border:0;border-radius:12px;color:#fff;font:inherit;font-weight:800;font-size:16px;padding:14px 8px;text-align:center;line-height:1.15}
+.code small{display:block;font-weight:400;font-size:11.5px;opacity:.92;margin-top:3px}
+.c-obe{background:var(--obe)}.c-crimson{background:var(--crimson)}.c-pink{background:var(--pink)}.c-mtp{background:var(--mtp)}
+.wrap{padding:0 12px 90px;max-width:760px;margin:0 auto}
+.search{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font:inherit;margin:4px 0 10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tile{background:#fff;border:1px solid var(--line);border-left:6px solid var(--navy);border-radius:10px;padding:12px 10px;text-align:left;font:inherit;color:var(--ink);min-height:68px}
+.tile b{display:block;font-size:15.5px}
+.tile span{font-size:12px;color:var(--mut)}
+.tile.t-crimson{border-left-color:var(--crimson)}.tile.t-pink{border-left-color:var(--pink)}.tile.t-obe{border-left-color:var(--obe)}
+.sect-h{font-size:12px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;margin:16px 2px 6px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.card h3{margin:0 0 8px;font-size:15px;color:var(--navy);text-transform:uppercase;letter-spacing:.4px}
+.card ul{margin:0;padding-left:20px}.card li{margin:4px 0}
+.step{display:flex;gap:10px;align-items:flex-start;padding:10px 4px;border-top:1px solid #EEF0F3}
+.step:first-of-type{border-top:0}
+.step input{width:26px;height:26px;flex:none;margin-top:1px;accent-color:var(--teal)}
+.step.done .txt{color:#8A919C;text-decoration:line-through}
+.step .t{font-size:11px;color:var(--teal);font-weight:700;display:block}
+.med{border-top:1px solid #EEF0F3;padding:9px 0}.med:first-of-type{border-top:0}
+.med .n{font-weight:800}.med .d{font-size:16px;font-weight:700;color:var(--navy);margin:2px 0}.med .x{font-size:13px;color:var(--mut)}
+.algo{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.algo button{flex:1;min-width:30%;border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:8px;padding:9px 4px;font:inherit;font-size:14px;font-weight:700}
+.algo button.on{background:var(--navy);color:#fff}
+.seq{counter-reset:s;list-style:none;padding:0;margin:0}
+.seq li{counter-increment:s;position:relative;padding:8px 0 8px 34px;border-top:1px solid #EEF0F3}
+.seq li:first-child{border-top:0}
+.seq li:before{content:counter(s);position:absolute;left:0;top:8px;width:24px;height:24px;border-radius:12px;background:var(--teal);color:#fff;font-size:13px;font-weight:700;text-align:center;line-height:24px}
+.ph{background:var(--ph);padding:1px 5px;border-radius:4px;font-weight:700;color:#6B4E00}
+.local{border:2px solid var(--teal)}
+.local h3{color:var(--teal)}
+.src{font-size:12.5px;color:var(--mut)}.src li{margin:3px 0}
+.warn{background:#FDECEA;border:1px solid #F5C2BC;color:#7A1D12;border-radius:10px;padding:10px 12px;font-size:14px;margin-bottom:10px}
+.mod-head{display:flex;align-items:center;gap:8px;margin:12px 0 6px}
+.mod-head h2{margin:0;font-size:22px;flex:1;color:var(--navy)}
+.clock{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;border-top:1px solid var(--line);display:flex;align-items:center;gap:8px;padding:8px 12px calc(8px + env(safe-area-inset-bottom))}
+.clock .tm{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--navy);min-width:92px}
+.clock .lb{font-size:11px;color:var(--mut);flex:1;line-height:1.2}
+.clock button{border:0;border-radius:8px;padding:10px 12px;font:inherit;font-weight:700;font-size:14px}
+.b-go{background:var(--teal);color:#fff}.b-gray{background:#E7E9ED;color:#222}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;display:none;align-items:flex-end;justify-content:center}
+.overlay.on{display:flex}
+.sheet{background:#fff;width:100%;max-width:560px;border-radius:16px 16px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+.sheet h2{margin:0 0 6px;font-size:22px}
+.script{font-size:22px;font-weight:800;line-height:1.3;background:#F4F5F7;border-radius:10px;padding:14px;margin:10px 0}
+.callbtn{display:block;text-align:center;text-decoration:none;color:#fff;font-weight:800;font-size:19px;border-radius:12px;padding:16px;margin:8px 0}
+.small{font-size:13px;color:var(--mut)}
+table.ct{width:100%;border-collapse:collapse}
+table.ct td{padding:10px 4px;border-top:1px solid #EEF0F3;vertical-align:top}
+table.ct a{color:var(--navy);font-weight:800;text-decoration:none;font-size:17px}
+.log{font-size:13px;font-family:Menlo,Consolas,monospace;white-space:pre-wrap;background:#F4F5F7;border-radius:8px;padding:8px;max-height:220px;overflow:auto}
+.tabs{display:flex;gap:6px;margin:10px 0 2px}
+.tabs button{flex:1;border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px 4px;font:inherit;font-size:13.5px;font-weight:700;color:var(--navy)}
+.gcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 16px;margin:8px 0 12px;min-height:46vh;display:flex;flex-direction:column}
+.gprog{height:6px;background:#E7E9ED;border-radius:3px;overflow:hidden;margin-bottom:12px}.gprog i{display:block;height:100%;background:var(--teal)}
+.gnum{font-size:12px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
+.gtxt{font-size:25px;font-weight:800;line-height:1.25;margin:10px 0;color:var(--ink)}
+.gnote{font-size:15px;color:var(--mut);margin-bottom:8px}
+.gq{color:var(--navy)}
+.gbtns{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+.gb{border:0;border-radius:12px;padding:18px;font:inherit;font-size:20px;font-weight:800;color:#fff;background:var(--teal)}
+.gb.yes{background:var(--obe)}.gb.no{background:var(--navy)}.gb.sec{background:#E7E9ED;color:#222;font-size:16px;padding:12px}
+.grow{display:flex;gap:8px}.grow .gb{flex:1}
+.gcount{font-size:64px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums;color:var(--navy);margin:8px 0}
+.gend{color:var(--teal)}
+.mtabs{display:flex;gap:6px;margin:10px 0 0}.mtabs button{flex:1;border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:8px;padding:10px;font:inherit;font-weight:800;font-size:14px}.mtabs button.on{background:var(--navy);color:#fff}
+</style>
+</head>
+<body>
+<header>
+  <div class="hrow">
+    <button class="hbtn" id="backBtn" style="display:none" onclick="go('')">&#8592; Home</button>
+    <h1 id="hTitle">Holy Name OB Emergencies</h1>
+    <button class="hbtn" onclick="go('contacts')">Contacts</button>
+  </div>
+</header>
+<div class="disc">Clinical reference aid only. Not hospital policy. Do not enter patient information.</div>
+<div class="codes" id="codes">
+  <button class="code c-obe" onclick="callCode('obe')">OBSTETRIC EMERGENCY<small>Life-threatening event in pregnancy, labor or delivery</small></button>
+  <button class="code c-crimson" onclick="callCode('crimson')">CODE CRIMSON<small>Obstetric hemorrhage, anywhere</small></button>
+  <button class="code c-pink" onclick="callCode('pink')">CODE PINK<small>Delivery outside LDRP / unattended delivery</small></button>
+  <button class="code c-mtp" onclick="callCode('mtp')">MTP<small>Massive transfusion protocol</small></button>
+</div>
+<main class="wrap" id="view"></main>
+
+<div class="clock" id="clock" style="display:none">
+  <div class="tm" id="tm">00:00</div>
+  <div class="lb" id="clockLbl">Event clock not started. Checked steps are time-stamped.</div>
+  <button class="b-go" id="clockBtn" onclick="toggleClock()">Start</button>
+  <button class="b-gray" onclick="go('log')">Log</button>
+</div>
+
+<div class="overlay" id="ov" onclick="if(event.target===this)closeOv()">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+/* ---------- Holy Name local configuration ---------- */
+const HN = {
+  switchboard: {label:"(201) 833-3000", tel:"+12018333000"},
+  ldrp: {label:"(201) 833-3125", tel:"+12018333125"},
+  charge: {label:"(201) 961-3449", tel:"+12019613449"},
+};
+const PH = s => `<span class="ph">${s}</span>`;
+const CODES = {
+  obe:{name:"Obstetric Emergency",cls:"c-obe",color:"var(--obe)",
+    when:"Life-threatening medical issue during pregnancy, labor or delivery, inside or outside the Maternal Child Division, including LDRP. ED: unstable or major trauma patient ≥ 20 weeks.",
+    team:["Obstetrician on call","Pediatrician on call","Hospitalist on call","Neonatologist","Anesthesiologist (OB and on call)","LDRP Charge RN","NICU Charge RN","Respiratory Therapist","LDRP Manager / Nursing Supervisor"]},
+  crimson:{name:"Code Crimson",cls:"c-crimson",color:"var(--crimson)",
+    when:"Obstetric hemorrhage anywhere in the hospital (most often LDRP and the ED). Activates the blood bank. Does not activate MTP.",team:null},
+  pink:{name:"Code Pink",cls:"c-pink",color:"var(--pink)",
+    when:"Delivery outside LDRP, or emergency team needed for a physician-unattended delivery in LDRP.",team:null},
+  mtp:{name:"Massive Transfusion Protocol",cls:"c-mtp",color:"var(--mtp)",
+    when:"Activated separately through the operator. Code Crimson does not activate MTP.",team:null}
+};
+
+/* ---------- Clinical modules ---------- */
+const M = [
+/* ===== PPH ===== */
+{id:"pph",title:"Postpartum Hemorrhage",sub:"Code Crimson",code:"crimson",tile:"t-crimson",
+sections:[
+ {type:"list",h:"Recognition",items:[
+  "Cumulative blood loss ≥ 1,000 mL, or blood loss with signs or symptoms of hypovolemia, within 24 h of birth (includes intrapartum loss).",
+  "Tachycardia and hypotension may be late findings; follow cumulative QBL and trends.",
+  "Causes: Tone (atony, most common), Trauma (laceration, hematoma, inversion, rupture), Tissue (retained placenta, accreta spectrum), Thrombin (coagulopathy)."]},
+ {type:"steps",h:"Immediate actions",items:[
+  "Call Code Crimson: dial 0, state location.",
+  "Assign roles: leader, QBL/recorder, medications, communication.",
+  "Second large-bore IV; warmed crystalloid.",
+  "Labs: CBC, coagulation panel, fibrinogen, type and crossmatch.",
+  "Fundal massage; bimanual compression.",
+  "Empty bladder (indwelling catheter).",
+  "Uterotonics (see Medications).",
+  "Tranexamic acid 1 g IV over 10 min (see Medications).",
+  "Inspect for lacerations, retained tissue, hematoma; identify cause (4 Ts).",
+  "Continuous QBL, vital signs every 5 to 15 min, O2 saturation, urine output.",
+  "Intrauterine tamponade: JADA (stocked on LDRP).",
+  "Ongoing bleeding or instability: move to OR; anesthesia and second obstetrician.",
+  "Activate MTP through the operator when massive transfusion is anticipated.",
+  "Escalate: uterine compression sutures, uterine artery ligation, IR embolization if stable, hysterectomy.",
+  "Post-event: debrief team; discuss event with patient and family."]},
+ {type:"meds",h:"Uterotonics and adjuncts (ACOG PB 183, Table)",items:[
+  ["Oxytocin","10–40 units in 500–1,000 mL IV continuous infusion, or 10 units IM","Avoid undiluted rapid IV push (hypotension)."],
+  ["Methylergonovine","0.2 mg IM every 2–4 h","Avoid with hypertension or preeclampsia."],
+  ["Hemabate (carboprost)","0.25 mg IM or intramyometrial every 15–90 min; max 8 doses","Avoid with asthma; relative contraindication with hepatic, renal or cardiac disease."],
+  ["Misoprostol","600–1,000 micrograms oral, sublingual or rectal, once","Fever, shivering common."],
+  ["Tranexamic acid","1 g IV over 10 min; second 1 g if bleeding continues after 30 min or resumes within 24 h","Give within 3 h of birth. Holy Name: LDRP Pyxis."]]},
+ {type:"list",h:"Transfusion",items:[
+  "Do not delay transfusion for laboratory results when bleeding is ongoing.",
+  "Massive transfusion: fixed ratio of packed red cells, plasma and platelets per Holy Name MTP.",
+  "Correct hypofibrinogenemia; recheck fibrinogen, coagulation panel and CBC serially.",
+  "Prevent hypothermia, acidosis and hypocalcemia during massive transfusion."]},
+ {type:"local",items:[
+  "Code Crimson: dial 0. Activates blood bank only.",
+  "MTP: separate activation through the operator (0).",
+  "QBL performed for all deliveries.",
+  "Tamponade device: JADA.",
+  "TXA: LDRP Pyxis.",
+  "Hemorrhage cart location: "+PH("To be confirmed")]},
+ {type:"src",items:[
+  "ACOG Practice Bulletin No. 183, Postpartum Hemorrhage. Obstet Gynecol 2017;130:e168–86.",
+  "ACOG Clinical Practice Update: Use of Nonsurgical Hemorrhage-Control Devices for Postpartum Hemorrhage Management. 2025 (focused update of PB 183).",
+  "AIM Obstetric Hemorrhage Patient Safety Bundle (revised 2022). saferbirth.org.",
+  "WOMAN Trial Collaborators. Lancet 2017;389:2105–16 (TXA dosing and 3-h window, cited in PB 183)."]}
+]},
+
+/* ===== Severe HTN ===== */
+{id:"htn",title:"Severe Hypertension",sub:"≥ 160 / ≥ 110",code:"obe",tile:"t-obe",
+sections:[
+ {type:"list",h:"Threshold",items:[
+  "Systolic ≥ 160 mm Hg or diastolic ≥ 110 mm Hg, confirmed and persistent for 15 min or more, in pregnancy or postpartum.",
+  "Treat as soon as possible, within 30 to 60 min of confirmed severe-range BP, to reduce the risk of maternal stroke.",
+  "Begin magnesium sulfate for seizure prophylaxis if preeclampsia with severe features (see Eclampsia)."]},
+ {type:"algo",h:"First-line algorithms (ACOG CO 767 model order sets)",algos:{
+  "Labetalol IV":[
+   "Labetalol 20 mg IV over 2 min.",
+   "Recheck BP in 10 min. If still severe: labetalol 40 mg IV over 2 min.",
+   "Recheck BP in 10 min. If still severe: labetalol 80 mg IV over 2 min.",
+   "Recheck BP in 10 min. If still severe: hydralazine 10 mg IV over 2 min.",
+   "Recheck BP in 20 min. If still severe: emergency consultation (MFM, anesthesiology or critical care)."],
+  "Hydralazine IV":[
+   "Hydralazine 5 or 10 mg IV over 2 min.",
+   "Recheck BP in 20 min. If still severe: hydralazine 10 mg IV over 2 min.",
+   "Recheck BP in 20 min. If still severe: labetalol 20 mg IV over 2 min.",
+   "Recheck BP in 10 min. If still severe: labetalol 40 mg IV over 2 min and emergency consultation (MFM, anesthesiology or critical care)."],
+  "Nifedipine IR PO":[
+   "Nifedipine immediate-release 10 mg PO.",
+   "Recheck BP in 20 min. If still severe: nifedipine IR 20 mg PO.",
+   "Recheck BP in 20 min. If still severe: nifedipine IR 20 mg PO.",
+   "Recheck BP in 20 min. If still severe: labetalol 20 mg IV over 2 min and emergency consultation (MFM, anesthesiology or critical care)."]}},
+ {type:"list",h:"After target BP achieved",items:[
+  "BP every 10 min for 1 h, every 15 min for 1 h, every 30 min for 1 h, then every hour for 4 h.",
+  "Labetalol: avoid with asthma, heart disease or congestive heart failure; may cause neonatal bradycardia.",
+  "Hydralazine: may cause maternal hypotension, headache, tachycardia.",
+  "Nifedipine IR: may cause reflex tachycardia, headache. Oral route useful without IV access."]},
+ {type:"local",items:["Holy Name severe-hypertension order set: all three ACOG algorithms available; agent at provider discretion.","RNs may administer IV push labetalol."]},
+ {type:"src",items:[
+  "ACOG Committee Opinion No. 767, Emergent Therapy for Acute-Onset, Severe Hypertension During Pregnancy and the Postpartum Period. Obstet Gynecol 2019;133:e174–80.",
+  "ACOG Practice Bulletin No. 222, Gestational Hypertension and Preeclampsia. Obstet Gynecol 2020;135:e237–60.",
+  "AIM Severe Hypertension in Pregnancy Patient Safety Bundle. saferbirth.org."]}
+]},
+
+/* ===== Eclampsia ===== */
+{id:"eclampsia",title:"Eclampsia / Magnesium",sub:"Seizure, Mg toxicity",code:"obe",tile:"t-obe",
+sections:[
+ {type:"steps",h:"Seizure: immediate actions",items:[
+  "Call Obstetric Emergency: dial 0, state location.",
+  "Protect from injury; lateral decubitus position; do not restrain.",
+  "Airway: suction, supplemental O2 by non-rebreather.",
+  "Magnesium sulfate loading dose (see Medications). If no IV: IM dosing.",
+  "Treat severe-range BP (see Severe Hypertension).",
+  "Assess fetal status after maternal stabilization; fetal bradycardia during seizure commonly recovers.",
+  "Plan delivery after maternal stabilization; eclampsia is not itself an indication for cesarean.",
+  "Persistent neurologic deficit or atypical presentation: neuroimaging."]},
+ {type:"meds",h:"Magnesium sulfate (ACOG PB 222)",items:[
+  ["Loading dose","4–6 g IV over 20–30 min","Then maintenance infusion."],
+  ["Maintenance","1–2 g/h IV continuous","Continue 24 h postpartum (or after last seizure). Reduce with renal impairment."],
+  ["No IV access","10 g IM (5 g each buttock), then 5 g IM every 4 h","May mix with 1 mL 2% lidocaine."],
+  ["Recurrent seizure on magnesium","Additional 2–4 g IV over 5 min","Refractory seizures: anesthesia and neurology; benzodiazepine or other agent."]]},
+ {type:"list",h:"Magnesium toxicity",items:[
+  "Signs: loss of patellar reflexes, respiratory depression, altered consciousness, cardiac conduction abnormality, cardiac arrest.",
+  "Stop the magnesium infusion; check serum magnesium; support airway and ventilation.",
+  "Calcium gluconate 1 g IV (10 mL of 10% solution) for respiratory depression or cardiotoxicity.",
+  "Cardiac arrest on magnesium: see Maternal Cardiac Arrest (calcium dosing)."]},
+ {type:"list",h:"Contraindications and cautions",items:["Myasthenia gravis (contraindicated).","Renal insufficiency: reduce or omit maintenance; monitor levels.","Pulmonary edema; concurrent calcium-channel blocker: monitor closely."]},
+ {type:"local",items:["Eclampsia / magnesium kit location: "+PH("To be confirmed"),"Calcium gluconate location: "+PH("To be confirmed")]},
+ {type:"src",items:["ACOG Practice Bulletin No. 222, Gestational Hypertension and Preeclampsia. Obstet Gynecol 2020;135:e237–60.","AIM Severe Hypertension in Pregnancy Patient Safety Bundle. saferbirth.org."]}
+]},
+
+/* ===== Shoulder dystocia ===== */
+{id:"sd",title:"Shoulder Dystocia",sub:"Maneuvers",code:"obe",tile:"t-obe",
+sections:[
+ {type:"steps",h:"Sequence",items:[
+  "Call for help: second obstetrician, anesthesia, neonatal team. Note time of head delivery.",
+  "Stop maternal pushing; no fundal pressure.",
+  "McRoberts maneuver (hyperflex maternal hips against abdomen).",
+  "Suprapubic pressure (directed to dislodge anterior shoulder).",
+  "Delivery of the posterior arm.",
+  "Internal rotational maneuvers (Rubin, Woods screw).",
+  "All-fours position (Gaskin) if feasible.",
+  "Episiotomy if needed for room for internal maneuvers (not routine).",
+  "Last-resort measures: cephalic replacement (Zavanelli) for cesarean, intentional clavicle fracture, abdominal rescue, symphysiotomy.",
+  "Neonatal resuscitation team at delivery; umbilical cord gases."]},
+ {type:"list",h:"Documentation",items:[
+  "Time of head delivery and time of body delivery (head-to-body interval).",
+  "Fetal position; anterior shoulder (right or left).",
+  "Each maneuver, sequence, and who performed it; traction applied.",
+  "Personnel present and time of arrival.",
+  "Neonatal condition, Apgar scores, cord gases, injuries.",
+  "Disclosure discussion with patient."]},
+ {type:"list",h:"Key points",items:["No single maneuver is proven superior; McRoberts is reasonable first.","Delivery of the posterior arm is reasonable after McRoberts and suprapubic pressure.","Most shoulder dystocia cannot be predicted or prevented."]},
+ {type:"src",items:["ACOG Practice Bulletin No. 178, Shoulder Dystocia. Obstet Gynecol 2017;129:e123–33."]}
+]},
+
+/* ===== Cardiac arrest ===== */
+{id:"arrest",title:"Maternal Cardiac Arrest",sub:"Resuscitative delivery by 5 min",code:"obe",tile:"t-obe",
+sections:[
+ {type:"steps",h:"Immediate actions",items:[
+  "Call Obstetric Emergency: dial 0, state location. "+PH("Confirm whether Code Blue is also called"),
+  "Start high-quality CPR; standard hand position; rate 100–120/min; minimize interruptions.",
+  "Continuous manual left uterine displacement if fundus at or above the umbilicus.",
+  "AED/defibrillator when indicated; standard energy; remove fetal monitors.",
+  "Early airway management by experienced provider; 100% O2.",
+  "IV/IO access above the diaphragm.",
+  "On IV magnesium: stop magnesium; give calcium.",
+  "Standard ACLS medications and doses.",
+  "Fundus at or above umbilicus and no ROSC: begin resuscitative (perimortem) cesarean delivery at the site of arrest; ideally delivered by 5 min. Do not move to OR.",
+  "Neonatal team: resuscitate newborn per NRP.",
+  "Identify and treat cause (see below)."]},
+ {type:"meds",h:"Arrest-specific medications",items:[
+  ["Calcium (magnesium-related arrest)","Calcium chloride 10% 10 mL IV, or calcium gluconate 10% 30 mL IV","Stop magnesium infusion."],
+  ["Epinephrine / antiarrhythmics","Standard ACLS doses","No dose modification in pregnancy."]]},
+ {type:"list",h:"Causes: BEAU-CHOPS",items:[
+  "B: Bleeding / DIC","E: Embolism (coronary, pulmonary, amniotic fluid)","A: Anesthetic complications","U: Uterine atony",
+  "C: Cardiac disease (MI, ischemia, aortic dissection, cardiomyopathy)","H: Hypertension, preeclampsia, eclampsia",
+  "O: Other (standard ACLS H's and T's)","P: Placenta abruption or previa","S: Sepsis"]},
+ {type:"local",items:["Perimortem cesarean kit location and who brings it: "+PH("To be confirmed")]},
+ {type:"src",items:[
+  "American Heart Association. 2025 Guidelines for CPR and ECC, Part 10: Adult and Pediatric Special Circumstances of Resuscitation (Pregnancy); Cardiac Arrest in Pregnancy Algorithm.",
+  "Jeejeebhoy FM, et al. Cardiac Arrest in Pregnancy: AHA Scientific Statement. Circulation 2015;132:1747–73 (BEAU-CHOPS; calcium dosing).",
+  "ACOG Practice Bulletin No. 211, Critical Care in Pregnancy. Obstet Gynecol 2019;133:e303–19."]}
+]},
+
+/* ===== AFE ===== */
+{id:"afe",title:"Amniotic Fluid Embolism",sub:"Collapse + DIC",code:"obe",tile:"t-obe",
+sections:[
+ {type:"list",h:"Recognition (research criteria, SMFM)",items:[
+  "Sudden cardiorespiratory arrest, or hypotension (SBP < 90) with respiratory compromise.",
+  "Overt DIC.",
+  "Onset during labor, cesarean, D&E, or within 30 min of placental delivery.",
+  "No fever ≥ 38.0 °C during labor.",
+  "AFE is a clinical diagnosis; no laboratory test confirms it."]},
+ {type:"steps",h:"Immediate actions",items:[
+  "Call Obstetric Emergency: dial 0, state location.",
+  "Cardiac arrest: high-quality CPR with standard BLS/ACLS (see Maternal Cardiac Arrest).",
+  "Arrest with fetus ≥ 23 weeks: immediate delivery.",
+  "Oxygenation and ventilation; early airway.",
+  "Hemodynamic support: vasopressors and inotropes; avoid excessive fluid.",
+  "Early coagulation assessment (CBC, coagulation panel, fibrinogen).",
+  "Activate MTP through the operator; aggressive blood product replacement for DIC and hemorrhage.",
+  "Anticipate uterine atony and PPH; Code Crimson if hemorrhage.",
+  "Critical care and cardiology/anesthesiology involvement; echocardiography when available."]},
+ {type:"src",items:["Society for Maternal-Fetal Medicine; Pacheco LD, et al. Amniotic fluid embolism: diagnosis and management. SMFM Consult Series #41. Am J Obstet Gynecol 2016;215:B16–24.","Clark SL, et al. Proposed diagnostic criteria for the case definition of AFE in research studies. Am J Obstet Gynecol 2016;215:408–12."]}
+]},
+
+/* ===== Sepsis ===== */
+{id:"sepsis",title:"Maternal Sepsis",sub:"CMQCC screen",code:"obe",tile:"t-obe",
+sections:[
+ {type:"list",h:"Step 1: initial screen (≥ 20 wk to ≤ 72 h postpartum)",items:[
+  "Oral temperature < 36 °C (96.8 °F) or ≥ 38 °C (100.4 °F).",
+  "Heart rate > 110 bpm.","Respiratory rate > 24/min.",
+  "WBC > 15,000 or < 4,000/mm³, or > 10% bands.",
+  "Positive screen: any 2 of 4. Outside this window, use standard (non-pregnancy) criteria."]},
+ {type:"list",h:"Step 2: end-organ injury (any 1 = sepsis)",items:[
+  "Hypotension: SBP < 85, MAP < 65, or SBP decrease > 40 mm Hg.",
+  "Hypoxia: O2 saturation < 92%, new O2 requirement, or mechanical / non-invasive ventilation.",
+  "Oliguria: < 60 mL over 2 h.","CNS: toxic appearance, confusion, agitation, unresponsiveness.",
+  "Creatinine ≥ 1.2 mg/dL. Bilirubin > 2 mg/dL.",
+  "Platelets < 100,000, INR > 1.5, or aPTT > 60 s.",
+  "Lactate: > 2 mmol/L (not in labor); > 4 mmol/L (in labor). Do not draw in second stage or within 1 h of delivery. Lactate indicates severity."]},
+ {type:"steps",h:"Screen-positive: actions",items:[
+  "Source-directed antibiotics within 1 h.","IV fluids 1–2 L over 1–2 h.","Vital signs every 30 min.",
+  "Labs: CBC, comprehensive metabolic panel, lactate; evaluate for end-organ injury.","Studies to identify source."]},
+ {type:"steps",h:"Sepsis (≥ 1 end-organ criterion): actions",items:[
+  "Call Obstetric Emergency if deteriorating.","Broad-spectrum antibiotics.","Blood cultures; coagulation studies.",
+  "Increase fluids to 30 mL/kg (ideal body weight) within 3 h.","Repeat lactate every 2 h for trend.",
+  "Escalation of care (ICU consultation)."]},
+ {type:"list",h:"Septic shock",items:["Vasopressor requirement to maintain MAP > 65 mm Hg despite adequate fluid, and lactate > 2 mmol/L with infection.","ICU admission."]},
+ {type:"src",items:["AIM Sepsis in Obstetric Care Patient Safety Bundle; Bauer ME, et al. Obstet Gynecol 2023;142:481–92.","CMQCC Flow Chart for Obstetric Sepsis, R11 (April 2025). cmqcc.org."]}
+]},
+
+/* ===== Cord prolapse ===== */
+{id:"cord",title:"Umbilical Cord Prolapse",sub:"Relieve compression",code:"obe",tile:"t-obe",
+sections:[
+ {type:"warn",text:"No dedicated ACOG guidance. Content from RCOG Green-top Guideline No. 50; for review by the department before clinical use."},
+ {type:"steps",h:"Immediate actions",items:[
+  "Call Obstetric Emergency (Code Pink if delivery outside LDRP): dial 0.",
+  "Elevate the presenting part manually off the cord; maintain until delivery.",
+  "Knee-chest or exaggerated left lateral (Trendelenburg) position.",
+  "Alternative for transfer or delay: fill bladder with 500–750 mL saline via catheter (empty before incision).",
+  "Minimize handling of the cord.",
+  "Stop oxytocin; consider tocolysis if delay.",
+  "Expedite delivery: cesarean (category 1) unless vaginal delivery is imminent and can be accomplished quickly and safely.",
+  "Neonatal team at delivery; cord gases."]},
+ {type:"src",items:["Royal College of Obstetricians and Gynaecologists. Umbilical Cord Prolapse. Green-top Guideline No. 50. 2014."]}
+]},
+
+/* ===== Uterine inversion ===== */
+{id:"inversion",title:"Uterine Inversion",sub:"Replace immediately",code:"crimson",tile:"t-crimson",
+sections:[
+ {type:"warn",text:"ACOG addresses inversion within PB 183 (hemorrhage). Doses for uterine relaxation: per anesthesiology."},
+ {type:"steps",h:"Immediate actions",items:[
+  "Call Code Crimson / Obstetric Emergency: dial 0.",
+  "Stop uterotonics.",
+  "Attempt immediate manual replacement (fundus pushed back through cervix).",
+  "Do not remove the placenta before replacement.",
+  "Uterine relaxation if needed: nitroglycerin, terbutaline, magnesium sulfate, or general anesthesia (anesthesiology).",
+  "Resuscitate: large-bore IV access, blood products; MTP through operator if needed.",
+  "After replacement: uterotonics; maintain bimanual support.",
+  "Failed manual replacement: OR for laparotomy (Huntington or Haultain procedure)."]},
+ {type:"src",items:["ACOG Practice Bulletin No. 183, Postpartum Hemorrhage. Obstet Gynecol 2017;130:e168–86."]}
+]},
+
+/* ===== Anaphylaxis ===== */
+{id:"anaphylaxis",title:"Anaphylaxis",sub:"IM epinephrine",code:"obe",tile:"t-obe",
+sections:[
+ {type:"steps",h:"Immediate actions",items:[
+  "Call Obstetric Emergency: dial 0.","Stop the suspected agent.",
+  "Epinephrine IM (see Medications); do not delay.","Left uterine displacement if fundus at or above umbilicus.",
+  "Airway; high-flow O2.","IV fluid bolus for hypotension.",
+  "Refractory: epinephrine infusion; anesthesiology and critical care.",
+  "Continuous fetal monitoring when viable and maternal condition allows.",
+  "Cardiac arrest: see Maternal Cardiac Arrest."]},
+ {type:"meds",h:"Medications",items:[
+  ["Epinephrine IM","0.5 mg (1 mg/mL), anterolateral thigh; repeat every 5–15 min as needed","First-line; no contraindication in pregnancy."],
+  ["Adjuncts","Antihistamines, bronchodilators, corticosteroids","Do not replace epinephrine."]]},
+ {type:"local",items:["Anaphylaxis kit location: "+PH("To be confirmed")]},
+ {type:"src",items:["American Heart Association. 2025 Guidelines for CPR and ECC, Part 10: Special Circumstances of Resuscitation (Anaphylaxis; Pregnancy)."]}
+]},
+
+/* ===== LAST ===== */
+{id:"last",title:"Local Anesthetic Toxicity",sub:"Lipid emulsion",code:"obe",tile:"t-obe",
+sections:[
+ {type:"warn",text:"No ACOG guidance. Content from ASRA checklist; for review by OB anesthesiology."},
+ {type:"steps",h:"Immediate actions",items:[
+  "Stop local anesthetic. Call Obstetric Emergency: dial 0.",
+  "Airway: 100% O2; avoid hyperventilation.","Seizures: benzodiazepine.",
+  "Lipid emulsion 20% (see Medications).","Left uterine displacement.",
+  "Cardiac arrest: CPR; epinephrine ≤ 1 microgram/kg; avoid vasopressin, calcium-channel blockers, beta-blockers, local anesthetics.",
+  "Prolonged resuscitation may be required; consider cardiopulmonary bypass."]},
+ {type:"meds",h:"Lipid emulsion 20%",items:[
+  ["> 70 kg","Bolus 100 mL over 2–3 min; infusion 200–250 mL over 15–20 min",""],
+  ["≤ 70 kg","Bolus 1.5 mL/kg over 2–3 min; infusion 0.25 mL/kg/min (ideal body weight)",""],
+  ["Persistent instability","Repeat bolus once or twice; double infusion rate","Upper limit about 12 mL/kg."]]},
+ {type:"local",items:["Lipid emulsion location: "+PH("To be confirmed")]},
+ {type:"src",items:["American Society of Regional Anesthesia and Pain Medicine. Checklist for Treatment of Local Anesthetic Systemic Toxicity. 2020."]}
+]},
+
+/* ===== High neuraxial ===== */
+{id:"highblock",title:"High / Total Neuraxial Block",sub:"Airway, vasopressors",code:"obe",tile:"t-obe",
+sections:[
+ {type:"warn",text:"Managed by anesthesiology. Supportive steps only."},
+ {type:"steps",h:"Immediate actions",items:[
+  "Call Obstetric Emergency: dial 0; anesthesiology to bedside.","Stop epidural infusion.",
+  "Left uterine displacement.","Airway support; 100% O2; intubation as indicated.",
+  "Vasopressors and IV fluids for hypotension; atropine for bradycardia (anesthesiology).",
+  "Cardiac arrest: see Maternal Cardiac Arrest.","Continuous fetal monitoring when maternal condition allows."]},
+ {type:"src",items:["ACOG Practice Bulletin No. 209, Obstetric Analgesia and Anesthesia. Obstet Gynecol 2019;133:e208–25.","American Heart Association. 2025 Guidelines for CPR and ECC (Pregnancy)."]}
+]},
+
+/* ===== Abruption ===== */
+{id:"abruption",title:"Placental Abruption",sub:"Hemorrhage, DIC",code:"crimson",tile:"t-crimson",
+sections:[
+ {type:"warn",text:"No dedicated ACOG Practice Bulletin. Hemorrhage response per PB 183 and AIM bundle."},
+ {type:"list",h:"Recognition",items:["Vaginal bleeding (may be concealed), abdominal or back pain, uterine tenderness or tetany, frequent contractions.","Fetal heart rate abnormalities; fetal demise.","Coagulopathy, especially with fetal demise or large abruption."]},
+ {type:"steps",h:"Immediate actions",items:[
+  "Call Code Crimson (hemorrhage) or Obstetric Emergency: dial 0.","Two large-bore IVs.",
+  "Labs: CBC, coagulation panel, fibrinogen, type and crossmatch.","Continuous fetal monitoring.",
+  "Delivery route by maternal and fetal status.","Anticipate PPH and DIC; replace fibrinogen and blood products; MTP through operator if needed.",
+  "Rh immune globulin if Rh(D)-negative."]},
+ {type:"src",items:["ACOG Practice Bulletin No. 183, Postpartum Hemorrhage. 2017.","AIM Obstetric Hemorrhage Patient Safety Bundle. saferbirth.org."]}
+]},
+
+/* ===== Precipitous delivery ===== */
+{id:"delivery",title:"Unplanned Delivery",sub:"Code Pink",code:"pink",tile:"t-pink",
+sections:[
+ {type:"steps",h:"Immediate actions",items:[
+  "Call Code Pink: dial 0, state location.","Gloves; position patient; clean drape or towels.",
+  "Control delivery of the head; check for nuchal cord (reduce over head or deliver through).",
+  "Gentle downward traction to deliver anterior shoulder, then upward for posterior.",
+  "Dry and stimulate newborn; skin-to-skin; keep warm.",
+  "Vigorous term or preterm newborn: delay cord clamping at least 30–60 s.",
+  "Non-vigorous newborn: neonatal resuscitation per NRP.",
+  "Oxytocin after delivery of the newborn.",
+  "Do not pull on the cord to deliver the placenta; await team.",
+  "Note time of birth. Monitor maternal bleeding (Code Crimson if hemorrhage)."]},
+ {type:"src",items:["ACOG Committee Opinion No. 814, Delayed Umbilical Cord Clamping After Birth. Obstet Gynecol 2020;136:e100–6.","ACOG Practice Bulletin No. 183, Postpartum Hemorrhage (oxytocin prophylaxis).","AAP/AHA Neonatal Resuscitation Program, 8th ed."]}
+]}
+];
+
+/* ---------- Guided flows ---------- */
+/* node: {t:'do',x,n} | {t:'ask',q,y,no} | {t:'wait',sec,x} | {t:'at',sec,x} | {t:'end',x}; y/no/next = node id; default next = following node */
+function htnChain(first){
+  const doses=first, N=[]; let i=0;
+  N.push({id:'c0',t:'ask',q:'Severe-range BP confirmed? (SBP \u2265 160 or DBP \u2265 110, persistent \u2265 15 min)',y:'d0',no:'nsev'});
+  doses.forEach((d,k)=>{
+    N.push({id:'d'+k,t:'do',x:d.give,n:d.n||''});
+    N.push({id:'w'+k,t:'wait',sec:d.wait,x:'Recheck BP'});
+    N.push({id:'a'+k,t:'ask',q:'BP still \u2265 160 systolic or \u2265 110 diastolic?',y:(k<doses.length-1?'d'+(k+1):'esc'),no:'tgt'});
+  });
+  N.push({id:'esc',t:'do',x:'Obtain emergency consultation: MFM, anesthesiology or critical care.',n:'Second-line therapy per consultant.',next:'mag'});
+  N.push({id:'tgt',t:'do',x:'Target achieved. Monitor BP every 10 min for 1 h, every 15 min for 1 h, every 30 min for 1 h, then hourly for 4 h.',next:'mag'});
+  N.push({id:'mag',t:'ask',q:'Preeclampsia with severe features?',y:'magy',no:'end'});
+  N.push({id:'magy',t:'do',x:'Magnesium sulfate 4\u20136 g IV over 20\u201330 min, then 1\u20132 g/h.',n:'No IV: 10 g IM (5 g each buttock).',next:'end'});
+  N.push({id:'nsev',t:'do',x:'Repeat BP in 15 min. Treat if severe range persists.',next:'end'});
+  N.push({id:'end',t:'end',x:'Algorithm complete.'});
+  return N;
+}
+const FLOWS={
+ pph:{nodes:[
+  {id:'p1',t:'do',x:'Call Code Crimson: dial 0, state location.',n:'Activates blood bank. MTP is a separate call through the operator.'},
+  {id:'p2',t:'do',x:'Assign roles: leader, QBL/recorder, medications, communication.'},
+  {id:'p3',t:'do',x:'Second large-bore IV. Warmed crystalloid.'},
+  {id:'p4',t:'do',x:'Labs: CBC, coagulation panel, fibrinogen, type and crossmatch.'},
+  {id:'p5',t:'do',x:'Fundal massage; bimanual compression.'},
+  {id:'p6',t:'do',x:'Empty bladder (indwelling catheter).'},
+  {id:'u1',t:'do',x:'Oxytocin 10–40 units in 500–1,000 mL IV, continuous infusion.',n:'No IV: oxytocin 10 units IM. Avoid undiluted rapid IV push.'},
+  {id:'t1',t:'do',x:'Tranexamic acid 1 g IV over 10 min.',n:'Within 3 h of birth. Holy Name: LDRP Pyxis.'},
+  {id:'q1',t:'ask',q:'Bleeding controlled?',y:'mon',no:'h1'},
+  {id:'h1',t:'ask',q:'Hypertension or preeclampsia?',y:'a1',no:'u2'},
+  {id:'u2',t:'do',x:'Methylergonovine 0.2 mg IM.',n:'May repeat every 2–4 h.'},
+  {id:'q2',t:'ask',q:'Bleeding controlled?',y:'mon',no:'a1'},
+  {id:'a1',t:'ask',q:'Asthma?',y:'u4',no:'u3'},
+  {id:'u3',t:'do',x:'Hemabate (carboprost) 0.25 mg IM or intramyometrial.',n:'May repeat every 15–90 min; maximum 8 doses. Relative contraindication: hepatic, renal or cardiac disease.'},
+  {id:'q3',t:'ask',q:'Bleeding controlled?',y:'mon',no:'u4'},
+  {id:'u4',t:'do',x:'Misoprostol 600–1,000 micrograms oral, sublingual or rectal, once.'},
+  {id:'c1',t:'do',x:'Identify cause (4 Ts): inspect for lacerations, hematoma, retained tissue, inversion; assess coagulation.'},
+  {id:'q4',t:'ask',q:'Bleeding controlled?',y:'mon',no:'j1'},
+  {id:'j1',t:'do',x:'Intrauterine tamponade: JADA.',n:'Stocked on LDRP. Use per device instructions.'},
+  {id:'t2',t:'do',x:'Bleeding continues 30 min after first TXA dose (or resumes within 24 h): tranexamic acid second 1 g IV over 10 min.'},
+  {id:'q5',t:'ask',q:'Bleeding controlled?',y:'mon',no:'or'},
+  {id:'or',t:'do',x:'Move to OR. Anesthesia and second obstetrician.'},
+  {id:'mtp',t:'do',x:'Activate MTP: dial 0. Transfuse without waiting for labs.',n:'Correct fibrinogen; recheck CBC, coagulation panel, fibrinogen. Prevent hypothermia, acidosis, hypocalcemia.'},
+  {id:'sx',t:'do',x:'Surgical control: uterine compression sutures, uterine artery ligation, IR embolization if stable, hysterectomy.',next:'mon'},
+  {id:'mon',t:'do',x:'Continue cumulative QBL, vital signs every 5–15 min, O2 saturation, urine output. Recheck labs.'},
+  {id:'deb',t:'do',x:'Debrief the team. Discuss the event with the patient and family.'},
+  {id:'end',t:'end',x:'Hemorrhage sequence complete.'}]},
+ htn:{pick:{
+  'Labetalol IV':htnChain([{give:'Labetalol 20 mg IV over 2 min.',wait:600},{give:'Labetalol 40 mg IV over 2 min.',wait:600},{give:'Labetalol 80 mg IV over 2 min.',wait:600},{give:'Hydralazine 10 mg IV over 2 min.',wait:1200}]),
+  'Hydralazine IV':htnChain([{give:'Hydralazine 5 or 10 mg IV over 2 min.',wait:1200},{give:'Hydralazine 10 mg IV over 2 min.',wait:1200},{give:'Labetalol 20 mg IV over 2 min.',wait:600},{give:'Labetalol 40 mg IV over 2 min.',wait:0}]),
+  'Nifedipine IR PO':htnChain([{give:'Nifedipine immediate-release 10 mg PO.',wait:1200},{give:'Nifedipine IR 20 mg PO.',wait:1200},{give:'Nifedipine IR 20 mg PO.',wait:1200},{give:'Labetalol 20 mg IV over 2 min.',wait:0}])}},
+ sd:{nodes:[
+  {id:'s1',t:'do',x:'Call for help: second obstetrician, anesthesia, neonatal team.',n:'Clock running = head-to-body interval.'},
+  {id:'s2',t:'do',x:'Stop maternal pushing. No fundal pressure.'},
+  {id:'m1',t:'do',x:'McRoberts: hyperflex maternal hips against abdomen.'},
+  {id:'q1',t:'ask',q:'Shoulders delivered?',y:'doc',no:'m2'},
+  {id:'m2',t:'do',x:'Suprapubic pressure, directed to dislodge the anterior shoulder.'},
+  {id:'q2',t:'ask',q:'Shoulders delivered?',y:'doc',no:'m3'},
+  {id:'m3',t:'do',x:'Deliver the posterior arm.'},
+  {id:'q3',t:'ask',q:'Shoulders delivered?',y:'doc',no:'m4'},
+  {id:'m4',t:'do',x:'Internal rotation: Rubin or Woods screw.',n:'Episiotomy if needed for room (not routine).'},
+  {id:'q4',t:'ask',q:'Shoulders delivered?',y:'doc',no:'m5'},
+  {id:'m5',t:'do',x:'All-fours position (Gaskin) if feasible; repeat maneuvers.'},
+  {id:'q5',t:'ask',q:'Shoulders delivered?',y:'doc',no:'m6'},
+  {id:'m6',t:'do',x:'Last resort: cephalic replacement (Zavanelli) for cesarean, clavicle fracture, abdominal rescue, symphysiotomy.'},
+  {id:'doc',t:'do',x:'Neonatal team assessment; umbilical cord gases.'},
+  {id:'doc2',t:'do',x:'Document: head and body delivery times, anterior shoulder, each maneuver and who performed it, personnel, neonatal outcome. Disclose to patient.',n:'Event log has the time stamps.'},
+  {id:'end',t:'end',x:'Shoulder dystocia sequence complete.'}]},
+ eclampsia:{nodes:[
+  {id:'e1',t:'do',x:'Call Obstetric Emergency: dial 0, state location.'},
+  {id:'e2',t:'do',x:'Protect from injury. Lateral decubitus. Do not restrain.'},
+  {id:'e3',t:'do',x:'Suction; O2 by non-rebreather.'},
+  {id:'iv',t:'ask',q:'IV access?',y:'e4',no:'e4im'},
+  {id:'e4',t:'do',x:'Magnesium sulfate 4\u20136 g IV over 20\u201330 min, then 1\u20132 g/h.',next:'e5'},
+  {id:'e4im',t:'do',x:'Magnesium sulfate 10 g IM (5 g each buttock), then 5 g IM every 4 h.',n:'Establish IV access.'},
+  {id:'e5',t:'ask',q:'Severe-range BP (\u2265 160 / \u2265 110)?',y:'e6',no:'e7'},
+  {id:'e6',t:'do',x:'Treat severe hypertension (open Severe Hypertension, step-by-step).'},
+  {id:'e7',t:'ask',q:'Recurrent seizure?',y:'e8',no:'e9'},
+  {id:'e8',t:'do',x:'Magnesium sulfate additional 2\u20134 g IV over 5 min.',n:'Refractory: anesthesiology and neurology.',next:'e9'},
+  {id:'e9',t:'do',x:'Assess fetal status after maternal stabilization.',n:'Fetal bradycardia during a seizure commonly recovers.'},
+  {id:'e10',t:'do',x:'Plan delivery after stabilization. Eclampsia alone is not an indication for cesarean.'},
+  {id:'tox',t:'ask',q:'Signs of magnesium toxicity? (absent reflexes, respiratory depression)',y:'e11',no:'end'},
+  {id:'e11',t:'do',x:'Stop magnesium. Calcium gluconate 1 g IV (10 mL of 10%). Support ventilation; check Mg level.'},
+  {id:'end',t:'end',x:'Sequence complete. Continue magnesium 24 h postpartum.'}]},
+ arrest:{nodes:[
+  {id:'a1',t:'do',x:'Call Obstetric Emergency: dial 0, state location.'},
+  {id:'a2',t:'do',x:'High-quality CPR: rate 100\u2013120/min, standard hand position.'},
+  {id:'a3',t:'do',x:'Manual left uterine displacement (fundus at or above umbilicus).'},
+  {id:'a4',t:'do',x:'Defibrillator on; shock if indicated (standard energy). Remove fetal monitors.'},
+  {id:'a5',t:'do',x:'Airway by experienced provider; 100% O2.'},
+  {id:'a6',t:'do',x:'IV/IO above the diaphragm. Standard ACLS drugs and doses.'},
+  {id:'mg',t:'ask',q:'On IV magnesium?',y:'a7',no:'a8'},
+  {id:'a7',t:'do',x:'Stop magnesium. Calcium chloride 10% 10 mL IV or calcium gluconate 10% 30 mL IV.'},
+  {id:'a8',t:'do',x:'Prepare for resuscitative delivery at the bedside. Neonatal team. Do not move to OR.'},
+  {id:'a9',t:'at',sec:240,x:'Resuscitative delivery decision at 4 min of arrest'},
+  {id:'q',t:'ask',q:'ROSC achieved?',y:'r',no:'cs'},
+  {id:'cs',t:'do',x:'Fundus at or above umbilicus: begin resuscitative cesarean delivery now. Goal: delivered by 5 min.',n:'Continue CPR and left uterine displacement throughout.'},
+  {id:'a10',t:'do',x:'Treat cause (BEAU-CHOPS): bleeding/DIC, embolism, anesthetic, atony, cardiac, hypertension, other H/Ts, placenta, sepsis.',next:'end'},
+  {id:'r',t:'do',x:'Post-arrest care; identify and treat cause; critical care.'},
+  {id:'end',t:'end',x:'Sequence complete.'}]}
+};
+function autoNodes(m){
+  const N=[]; m.sections.filter(s=>s.type==='steps').forEach(s=>s.items.forEach(i=>N.push({t:'do',x:stripTags(i),hdr:s.h})));
+  N.forEach((n,k)=>n.id='n'+k); N.push({id:'end',t:'end',x:'All steps complete.'}); return N;
+}
+function nodesFor(m){const f=FLOWS[m.id]; if(!f) return autoNodes(m); if(f.nodes) return f.nodes; const k=(state.g[m.id]||{}).pick; return k? f.pick[k]:null;}
+
+/* ---------- State ---------- */
+let state = {start:null, log:[], cur:null, algo:{}, g:{}, mode:{}};
+try{const s=JSON.parse(localStorage.getItem('hnobe')||'null'); if(s) state=Object.assign(state,s);}catch(e){}
+state.g=state.g||{};state.mode=state.mode||{};
+function save(){try{localStorage.setItem('hnobe',JSON.stringify(state));}catch(e){}}
+
+/* ---------- Rendering ---------- */
+const V = document.getElementById('view');
+function go(h){ if(location.hash!=='#'+h){ location.hash=h; } else render(); }
+window.addEventListener('hashchange',render);
+
+function fmt(ms){const s=Math.max(0,Math.floor(ms/1000));const m=Math.floor(s/60);return String(m).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function stamp(){return state.start? fmt(Date.now()-state.start) : new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});}
+
+function render(){
+  const h=location.hash.slice(1);
+  document.getElementById('backBtn').style.display=h?'':'none';
+  const clock=document.getElementById('clock');
+  const m=M.find(x=>x.id===h);
+  document.getElementById('codes').style.display=m?'none':'';
+  if(m){ clock.style.display='flex'; renderModule(m); }
+  else { clock.style.display = state.start ? 'flex':'none';
+    if(h==='contacts') renderContacts(); else if(h==='log') {clock.style.display='flex';renderLog();} else if(h==='about') renderAbout(); else renderHome(); }
+  window.scrollTo(0,0);
+}
+
+function renderHome(){
+  document.getElementById('hTitle').textContent='Holy Name OB Emergencies';
+  V.innerHTML=`<input class="search" placeholder="Search emergencies" oninput="filt(this.value)">
+  <div class="grid" id="g">${M.map(m=>`<button class="tile ${m.tile}" data-k="${(m.title+' '+m.sub).toLowerCase()}" onclick="go('${m.id}')"><b>${m.title}</b><span>${m.sub}</span></button>`).join('')}</div>
+  <div class="sect-h">Reference</div>
+  <div class="grid"><button class="tile" onclick="go('contacts')"><b>Codes and Contacts</b><span>Teams, triggers, numbers</span></button>
+  <button class="tile" onclick="go('about')"><b>About and Sources</b><span>Scope, disclaimer</span></button></div>`;
+}
+function filt(q){q=q.toLowerCase();document.querySelectorAll('#g .tile').forEach(t=>t.style.display=t.dataset.k.includes(q)?'':'none');}
+
+function renderModule(m){
+  document.getElementById('hTitle').textContent=m.title;
+  const mode=state.mode[m.id]||'guided';
+  const tabs=`<div class="mtabs"><button class="${mode==='guided'?'on':''}" onclick="setMode('${m.id}','guided')">Step by step</button><button class="${mode==='full'?'on':''}" onclick="setMode('${m.id}','full')">Full protocol</button></div>`;
+  if(mode==='guided'){V.innerHTML=tabs+renderGuided(m);return;}
+  const c=CODES[m.code];
+  let html=tabs+`<div class="mod-head"><h2>${m.title}</h2></div>
+  <button class="code ${c.cls}" style="width:100%;margin-bottom:10px" onclick="callCode('${m.code}')">CALL ${c.name.toUpperCase()}<small>Dial 0 from hospital phone · tap to call switchboard</small></button>`;
+  m.sections.forEach((s,si)=>{
+    if(s.type==='warn'){html+=`<div class="warn">${s.text}</div>`;return;}
+    if(s.type==='list'){html+=`<div class="card"><h3>${s.h}</h3><ul>${s.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;}
+    if(s.type==='steps'){html+=`<div class="card"><h3>${s.h}</h3>${s.items.map((i,ii)=>{const k=m.id+'-'+si+'-'+ii;const d=state.log.find(l=>l.k===k);return `<label class="step ${d?'done':''}"><input type="checkbox" ${d?'checked':''} onchange="tick('${k}',this,${JSON.stringify(stripTags(i)).replace(/"/g,'&quot;')})"><div class="txt">${d?`<span class="t">${d.t}</span>`:''}${i}</div></label>`}).join('')}</div>`;}
+    if(s.type==='meds'){html+=`<div class="card"><h3>${s.h}</h3>${s.items.map(r=>`<div class="med"><div class="n">${r[0]}</div><div class="d">${r[1]}</div>${r[2]?`<div class="x">${r[2]}</div>`:''}</div>`).join('')}</div>`;}
+    if(s.type==='algo'){const keys=Object.keys(s.algos);const sel=state.algo[m.id]||keys[0];
+      html+=`<div class="card"><h3>${s.h}</h3><div class="algo">${keys.map(k=>`<button class="${k===sel?'on':''}" onclick="setAlgo('${m.id}','${k}')">${k}</button>`).join('')}</div><ol class="seq">${s.algos[sel].map(x=>`<li>${x}</li>`).join('')}</ol></div>`;}
+    if(s.type==='local'){html+=`<div class="card local"><h3>Holy Name</h3><ul>${s.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;}
+    if(s.type==='src'){html+=`<div class="card"><h3>Sources</h3><ul class="src">${s.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;}
+  });
+  V.innerHTML=html;
+}
+function setMode(id,md){state.mode[id]=md;save();renderModule(M.find(x=>x.id===id));}
+let waitT=null;
+function gs(m){return state.g[m.id]||(state.g[m.id]={cur:null,hist:[]});}
+function renderGuided(m){
+  clearInterval(waitT);
+  const c=CODES[m.code], g=gs(m), f=FLOWS[m.id];
+  const callBtn=`<button class="code ${c.cls}" style="width:100%;margin-top:8px;padding:10px" onclick="callCode('${m.code}')">CALL ${c.name.toUpperCase()}<small>Dial 0 \u00b7 tap to call switchboard</small></button>`;
+  if(f&&f.pick&&!g.pick){
+    return callBtn+`<div class="gcard"><div class="gnum">${m.title}</div><div class="gtxt gq">Select first-line agent</div><div class="gnote">ACOG CO 767 model order sets. Agent at provider discretion.</div><div class="gbtns">${Object.keys(f.pick).map(k=>`<button class="gb no" onclick="pick('${m.id}','${k}')">${k}</button>`).join('')}</div></div>`;
+  }
+  const N=nodesFor(m); if(!g.cur) g.cur=N[0].id;
+  const i=N.findIndex(n=>n.id===g.cur), n=N[i];
+  const pct=Math.round(100*i/(N.length-1));
+  const hasDoses=m.sections.some(s=>s.type==='meds'||s.type==='algo');
+  const extra=`<div class="grow">${g.hist.length?`<button class="gb sec" onclick="gBack('${m.id}')">\u2190 Back</button>`:''}${hasDoses?`<button class="gb sec" onclick="showDoses('${m.id}')">Doses</button>`:''}<button class="gb sec" onclick="gRestart('${m.id}')">Restart</button></div>`;
+  let body='';
+  if(n.t==='do') body=`<div class="gnum">${n.hdr||m.title}${g.pick?' \u00b7 '+g.pick:''}</div><div class="gtxt">${n.x}</div>${n.n?`<div class="gnote">${n.n}</div>`:''}<div class="gbtns"><button class="gb" onclick="gNext('${m.id}',null,'Done')">Done \u2713</button>${extra}</div>`;
+  if(n.t==='ask') body=`<div class="gnum">Decision</div><div class="gtxt gq">${n.q}</div><div class="gbtns"><div class="grow"><button class="gb yes" onclick="gNext('${m.id}','${n.y}','Yes')">YES</button><button class="gb no" onclick="gNext('${m.id}','${n.no}','No')">NO</button></div>${extra}</div>`;
+  if(n.t==='wait'||n.t==='at'){
+    if(n.t==='wait'&&!n.sec){ setTimeout(()=>gNext(m.id,null,'skip'),0); return ''; }
+    if(n.t==='wait'&&!g.waitEnd){g.waitEnd=Date.now()+n.sec*1000;save();}
+    if(n.t==='at'&&!state.start){state.start=Date.now();save();updClock();}
+    const end=n.t==='wait'?g.waitEnd:state.start+n.sec*1000;
+    body=`<div class="gnum">${n.t==='wait'?'Timer':'Event clock'}</div><div class="gtxt">${n.x}</div><div class="gcount" id="gc">--:--</div><div class="gbtns"><button class="gb" onclick="gNext('${m.id}',null,'${n.t==='wait'?'Rechecked':'Reached'}')">${n.t==='wait'?'Recheck now':'Continue'}</button>${extra}</div>`;
+    const tick=()=>{const el=document.getElementById('gc'); if(!el){clearInterval(waitT);return;} const r=end-Date.now(); el.textContent=r>0?fmt(r):'NOW'; el.style.color=r>0?'var(--navy)':'var(--obe)'; if(r<=0&&!el.dataset.b){el.dataset.b=1;try{navigator.vibrate&&navigator.vibrate([300,150,300]);}catch(e){}}};
+    setTimeout(tick,0); waitT=setInterval(tick,500);
+  }
+  if(n.t==='end') body=`<div class="gnum">${m.title}</div><div class="gtxt gend">${n.x}</div><div class="gnote">Time-stamped steps are in the event log.</div><div class="gbtns"><button class="gb" onclick="go('log')">View event log</button>${extra}</div>`;
+  return callBtn+`<div class="gcard"><div class="gprog"><i style="width:${pct}%"></i></div>${body}</div>`;
+}
+function pick(id,k){const m=M.find(x=>x.id===id);const g=gs(m);g.pick=k;g.cur=null;g.hist=[];logIt(m.title+': '+k+' algorithm selected');save();renderModule(m);}
+function logIt(t){if(!state.start){state.start=Date.now();updClock();}state.log.push({k:'g-'+Date.now()+Math.random(),t:stamp(),txt:t});}
+function gNext(id,to,ans){
+  const m=M.find(x=>x.id===id),g=gs(m),N=nodesFor(m),i=N.findIndex(n=>n.id===g.cur),n=N[i];
+  if(ans!=='skip') logIt(n.t==='ask'? n.q+' '+ans.toUpperCase() : (n.t==='do'? n.x : n.x+' ('+ans+')'));
+  g.hist.push(g.cur); g.waitEnd=null;
+  g.cur= to || n.next || (N[i+1]?N[i+1].id:'end');
+  save(); renderModule(m); window.scrollTo(0,0);
+}
+function gBack(id){const m=M.find(x=>x.id===id),g=gs(m);if(g.hist.length){g.cur=g.hist.pop();g.waitEnd=null;save();renderModule(m);}}
+function gRestart(id){const m=M.find(x=>x.id===id);state.g[id]={cur:null,hist:[]};save();renderModule(m);}
+function showDoses(id){
+  const m=M.find(x=>x.id===id);let h=`<h2>Doses</h2><div style="max-height:60vh;overflow:auto">`;
+  m.sections.forEach(s=>{if(s.type==='meds')h+=`<div class="card"><h3>${s.h}</h3>${s.items.map(r=>`<div class="med"><div class="n">${r[0]}</div><div class="d">${r[1]}</div>${r[2]?`<div class="x">${r[2]}</div>`:''}</div>`).join('')}</div>`;
+   if(s.type==='algo')Object.keys(s.algos).forEach(k=>h+=`<div class="card"><h3>${k}</h3><ol class="seq">${s.algos[k].map(x=>`<li>${x}</li>`).join('')}</ol></div>`);});
+  h+=`</div><button class="callbtn" style="background:#E7E9ED;color:#222;border:0;width:100%;font:inherit;font-weight:800;font-size:17px" onclick="closeOv()">Close</button>`;openOv(h);
+}
+function stripTags(s){return s.replace(/<[^>]+>/g,'');}
+function setAlgo(id,k){state.algo[id]=k;save();renderModule(M.find(x=>x.id===id));}
+function tick(k,el,txt){
+  if(el.checked){ state.log.push({k,t:stamp(),txt}); }
+  else { state.log=state.log.filter(l=>l.k!==k); }
+  save(); const m=M.find(x=>x.id===location.hash.slice(1)); if(m) renderModule(m);
+}
+
+function renderContacts(){
+  document.getElementById('hTitle').textContent='Codes and Contacts';
+  const row=(l,o)=>`<tr><td>${l}</td><td style="text-align:right"><a href="tel:${o.tel}">${o.label}</a></td></tr>`;
+  V.innerHTML=`<div class="card"><h3>How to call a code</h3><ul><li><b>Hospital phone:</b> dial <b>0</b>, state the code and location.</li><li><b>Cell phone:</b> call the switchboard ${HN.switchboard.label}, state the code and location.</li><li>All codes are an overhead page plus alerts to assigned team members.</li></ul></div>
+  ${Object.values(CODES).map(c=>`<div class="card"><h3 style="color:${c.color}">${c.name}</h3><p style="margin:0 0 6px">${c.when}</p>${c.team?`<div class="small" style="font-weight:700;margin-top:6px">Team alerted</div><ul>${c.team.map(t=>`<li>${t}</li>`).join('')}</ul>`:''}</div>`).join('')}
+  <div class="card"><h3>Numbers</h3><table class="ct">${row('Main switchboard',HN.switchboard)}${row('LDRP',HN.ldrp)}${row('LDRP Charge RN',HN.charge)}</table></div>
+  <div class="small">Source: Holy Name Practice Alert 315 (Obstetric Emergency; Code Pink; Code Crimson).</div>`;
+}
+
+function renderLog(){
+  document.getElementById('hTitle').textContent='Event Log';
+  const txt=state.log.map(l=>`${l.t}  ${l.txt}`).join('\n')||'No steps recorded.';
+  V.innerHTML=`<div class="card"><h3>Time-stamped steps</h3><div class="small" style="margin-bottom:6px">${state.start?'Times are elapsed from event start.':'Clock not started; clock times shown.'} Stored only on this device. No patient identifiers.</div><div class="log" id="logtxt">${txt.replace(/</g,'&lt;')}</div>
+  <div style="display:flex;gap:8px;margin-top:10px"><button class="b-go" style="flex:1;border:0;border-radius:8px;padding:12px;font:inherit;font-weight:700" onclick="copyLog()">Copy</button><button class="b-gray" style="flex:1;border:0;border-radius:8px;padding:12px;font:inherit;font-weight:700" onclick="confirmReset()">Clear event</button></div><div class="small" id="cpmsg"></div></div>`;
+}
+function copyLog(){const t=document.getElementById('logtxt').innerText;navigator.clipboard.writeText(t).then(()=>{document.getElementById('cpmsg').textContent='Copied.';}).catch(()=>{document.getElementById('cpmsg').textContent='Copy unavailable; select text manually.';});}
+function confirmReset(){
+  openOv(`<h2>Clear event?</h2><p>Clears the event clock and all time-stamped steps on this device.</p>
+  <button class="callbtn" style="background:var(--obe);border:0;width:100%;font:inherit;font-weight:800;font-size:18px" onclick="resetEvent()">Clear</button>
+  <button class="callbtn" style="background:#E7E9ED;color:#222;border:0;width:100%;font:inherit;font-weight:800;font-size:18px" onclick="closeOv()">Cancel</button>`);
+}
+function resetEvent(){state.start=null;state.log=[];state.g={};save();closeOv();updClock();render();}
+
+function renderAbout(){
+  document.getElementById('hTitle').textContent='About';
+  V.innerHTML=`<div class="card"><h3>Scope</h3><p style="margin:0">Real-time reference for obstetric emergencies at Holy Name Medical Center, Women’s and Children’s Health. Clinical content follows ACOG guidance and AIM patient safety bundles. Where ACOG defers or has no guidance, the source organization (AHA, SMFM, CMQCC, ASRA, RCOG) is named on each screen.</p></div>
+  <div class="card"><h3>Disclaimer</h3><p style="margin:0">Clinical reference aid only. Not hospital policy and not a substitute for clinical judgment. Do not enter protected health information. Verify medication doses against current orders and pharmacy.</p></div>
+  <div class="card"><h3>Status</h3><p style="margin:0">Draft v0.1, ${new Date(2026,10,21).toLocaleDateString()}. Items marked ${PH('To be confirmed')} require Holy Name input.</p></div>`;
+}
+
+/* ---------- Code call sheet ---------- */
+function callCode(k){
+  const c=CODES[k];
+  openOv(`<h2 style="color:${c.color}">${c.name}</h2>
+  <div class="small">Hospital phone: dial <b>0</b>. Cell phone: tap below.</div>
+  <div class="script">“${c.name}, [unit], room [number].”</div>
+  <a class="callbtn" style="background:${c.color}" href="tel:${HN.switchboard.tel}">Call switchboard ${HN.switchboard.label}</a>
+  <div class="small">${c.when}</div>
+  <button class="callbtn" style="background:#E7E9ED;color:#222;border:0;width:100%;font:inherit;font-weight:800;font-size:17px" onclick="closeOv()">Close</button>`);
+  if(!state.start){state.start=Date.now();}
+  state.log.push({k:'code-'+Date.now(),t:stamp(),txt:c.name+' called'}); save(); updClock();
+}
+function openOv(h){document.getElementById('sheet').innerHTML=h;document.getElementById('ov').classList.add('on');}
+function closeOv(){document.getElementById('ov').classList.remove('on'); if(M.find(x=>x.id===location.hash.slice(1))) render(); else document.getElementById('clock').style.display=state.start?'flex':document.getElementById('clock').style.display;}
+
+/* ---------- Event clock ---------- */
+function toggleClock(){ if(state.start){ confirmReset(); } else { state.start=Date.now(); state.log.push({k:'start-'+Date.now(),t:'00:00',txt:'Event clock started'}); save(); updClock(); } }
+function updClock(){
+  const tm=document.getElementById('tm'),lb=document.getElementById('clockLbl'),b=document.getElementById('clockBtn');
+  if(state.start){tm.textContent=fmt(Date.now()-state.start);lb.textContent='Elapsed since event start. Checked steps are time-stamped.';b.textContent='Reset';b.className='b-gray';}
+  else{tm.textContent='00:00';lb.textContent='Event clock not started. Checked steps are time-stamped.';b.textContent='Start';b.className='b-go';}
+}
+setInterval(()=>{ if(state.start) document.getElementById('tm').textContent=fmt(Date.now()-state.start); },1000);
+updClock(); render();
+try{ if('serviceWorker' in navigator && location.protocol==='https:') navigator.serviceWorker.register('sw.js'); }catch(e){}
+</script>
+</body>
+</html>
