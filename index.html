@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1B3456">
-<title>Holy Name OB Emergencies</title>
+<title>OB Emergencies</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="apple-mobile-web-app-title" content="HN OB Emergencies">
+<meta name="apple-mobile-web-app-title" content="OB Emergencies">
 <style>
 :root{--navy:#1B3456;--teal:#3E8680;--obe:#C0392B;--crimson:#8B0A1A;--pink:#C2185B;--mtp:#5B2C6F;--bg:#F4F5F7;--ink:#111;--mut:#5A6270;--line:#DADDE2;--ph:#FFF3C4}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -91,7 +91,7 @@ table.ct a{color:var(--navy);font-weight:800;text-decoration:none;font-size:17px
 <header>
   <div class="hrow">
     <button class="hbtn" id="backBtn" style="display:none" onclick="go('')">&#8592; Home</button>
-    <h1 id="hTitle">Holy Name OB Emergencies</h1>
+    <h1 id="hTitle">OB Emergencies</h1>
     <button class="hbtn" onclick="go('contacts')">Contacts</button>
   </div>
 </header>
@@ -593,7 +593,7 @@ function render(){
 }
 
 function renderHome(){
-  document.getElementById('hTitle').textContent='Holy Name OB Emergencies';
+  document.getElementById('hTitle').textContent='OB Emergencies';
   V.innerHTML=`<input class="search" placeholder="Search emergencies" oninput="filt(this.value)">
   <div class="grid" id="g">${M.map(m=>`<button class="tile ${m.tile}" data-k="${(m.title+' '+m.sub).toLowerCase()}" onclick="go('${m.id}')"><b>${m.title}</b><span>${m.sub}</span></button>`).join('')}</div>
   <div class="sect-h">Reference</div>
