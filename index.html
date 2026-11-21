@@ -118,7 +118,7 @@ table.ct a{color:var(--navy);font-weight:800;text-decoration:none;font-size:17px
   <button class="b-go" id="clockBtn" onclick="toggleClock()">Start</button>
   <button class="b-gray" onclick="go('log')">Log</button>
   <div class="tm" id="tm">00:00</div>
-  <div class="lb" id="clockLbl" style="padding-right:150px">Event clock not started. Checked steps are time-stamped.</div>
+  <div class="lb" id="clockLbl" style="display:none">Event clock not started. Checked steps are time-stamped.</div>
 </div>
 
 <div class="overlay" id="ov" onclick="if(event.target===this)closeOv()">
