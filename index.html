@@ -547,7 +547,7 @@ const FLOWS={
   {id:'u5',t:'do',x:'ED. OB/GYN consultation at ED provider discretion.',n:'Includes unstable patients within 6 weeks of a pregnancy loss < 20 weeks.',next:'end'},
   {id:'t1',t:'ask',q:'Pregnancy status?',n:'Visibly pregnant with unknown gestational age counts as \u2265 20 weeks. Postpartum: within 42 days of delivery at \u2265 20 weeks, including stillbirth.',yl:'Pregnant \u2265 20 weeks, or postpartum \u2264 6 weeks',nl:'Other',y:'t2',no:'t5'},
   {id:'t2',t:'ask',q:'Chest pain, shortness of breath, or another acute medical emergency?',n:'Examples: stroke symptoms, altered mental status, syncope, sepsis, overdose, suicidal ideation.',y:'t3',no:'t4'},
-  {id:'t3',t:'do',x:'ED. In-person obstetric consultation required.',n:'ED attending calls the laborist directly, or activates an OB Emergency if clinically indicated.',tel:'laborist',call:'obe',next:'end'},
+  {id:'t3',t:'do',x:'ED. In-person obstetric consultation required.',n:'ED attending calls the laborist directly.',tel:'laborist',next:'end'},
   {id:'t4',t:'ask',q:'Is the complaint on this LDRP list?',y:'w1',no:'t4b',n:'Abdominal pain; contractions; leakage of fluid; vaginal bleeding/discharge/GYN complaint; severe headache; elevated BP, visual changes, RUQ/epigastric pain, seizure; decreased fetal movement; known previa/placental abnormality; minor abdominal trauma; postpartum fever or wound complaint.'},
   {id:'t4b',t:'ask',q:'Type of complaint?',n:'If unsure, send to LDRP.',yl:'Obstetric, or unsure',nl:'Clearly non-obstetric',y:'w1',no:'t4c'},
   {id:'t4c',t:'do',x:'ED, at triage RN discretion.',n:'Pregnant ≥ 20 weeks: in-person obstetric evaluation documented before ED discharge or transfer. Call laborist.',tel:'laborist',next:'end'},
