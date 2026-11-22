@@ -68,7 +68,7 @@ header{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;paddin
 .clock .tm{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--navy);min-width:92px}
 .clock .lb{font-size:11px;color:var(--mut);flex:1;line-height:1.2}
 .clock button{border:0;border-radius:8px;padding:10px 12px;font:inherit;font-weight:700;font-size:14px}
-.b-stop{background:var(--obe);color:#fff}.b-go{background:var(--teal);color:#fff}.b-gray{background:#E7E9ED;color:#222}
+.dosebtn{display:inline-block;margin:4px 0 0;border:1px solid var(--teal);background:#EAF4F3;color:var(--teal);border-radius:8px;padding:6px 10px;font:inherit;font-size:14px;font-weight:800}.dosebox{background:#F7FAFA;border:1px solid #D5E6E4;border-radius:10px;padding:4px 10px;margin-top:6px;text-decoration:none}.step.done .dosebox{text-decoration:none;color:var(--ink)}.b-stop{background:var(--obe);color:#fff}.b-go{background:var(--teal);color:#fff}.b-gray{background:#E7E9ED;color:#222}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;display:none;align-items:flex-end;justify-content:center}
 .overlay.on{display:flex}
 .sheet{background:#fff;width:100%;max-width:560px;border-radius:16px 16px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
@@ -697,7 +697,7 @@ function renderModule(m){
   m.sections.forEach((s,si)=>{
     if(s.type==='warn'){html+=`<div class="warn">${s.text}</div>`;return;}
     if(s.type==='list'){html+=`<div class="card"><h3>${s.h}</h3><ul>${s.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;}
-    if(s.type==='steps'){html+=`<div class="card"><h3>${s.h}</h3>${s.items.map((i,ii)=>{const k=m.id+'-'+si+'-'+ii;const d=state.log.find(l=>l.k===k);return `<label class="step ${d?'done':''}"><input type="checkbox" ${d?'checked':''} onchange="tick('${k}',this,${JSON.stringify(stripTags(i)).replace(/"/g,'&quot;')})"><div class="txt">${d?`<span class="t">${d.t}</span>`:''}${i}</div></label>`}).join('')}</div>`;}
+    if(s.type==='steps'){html+=`<div class="card"><h3>${s.h}</h3>${s.items.map((i,ii)=>{const k=m.id+'-'+si+'-'+ii;const d=state.log.find(l=>l.k===k);return `<label class="step ${d?'done':''}"><input type="checkbox" ${d?'checked':''} onchange="tick('${k}',this,${JSON.stringify(stripTags(i)).replace(/"/g,'&quot;')})"><div class="txt">${d?`<span class="t">${d.t}</span>`:''}${doseLink(m,i)}</div></label>`}).join('')}</div>`;}
     if(s.type==='meds'){html+=`<div class="card"><h3>${s.h}</h3>${s.items.map(r=>`<div class="med"><div class="n">${r[0]}</div><div class="d">${r[1]}</div>${r[2]?`<div class="x">${r[2]}</div>`:''}</div>`).join('')}</div>`;}
     if(s.type==='algo'){const keys=Object.keys(s.algos);const sel=state.algo[m.id]||keys[0];
       html+=`<div class="card"><h3>${s.h}</h3><div class="algo">${keys.map(k=>`<button class="${k===sel?'on':''}" onclick="setAlgo('${m.id}','${k}')">${k}</button>`).join('')}</div><ol class="seq">${s.algos[sel].map(x=>`<li>${x}</li>`).join('')}</ol></div>`;}
@@ -777,6 +777,16 @@ function showDoses(id){
   m.sections.forEach(s=>{if(s.type==='meds')h+=`<div class="card"><h3>${s.h}</h3>${s.items.map(r=>`<div class="med"><div class="n">${r[0]}</div><div class="d">${r[1]}</div>${r[2]?`<div class="x">${r[2]}</div>`:''}</div>`).join('')}</div>`;
    if(s.type==='algo')Object.keys(s.algos).forEach(k=>h+=`<div class="card"><h3>${k}</h3><ol class="seq">${s.algos[k].map(x=>`<li>${x}</li>`).join('')}</ol></div>`);});
   h+=`</div><button class="callbtn" style="background:#E7E9ED;color:#222;border:0;width:100%;font:inherit;font-weight:800;font-size:17px" onclick="closeOv()">Close</button>`;openOv(h);
+}
+function doseLink(m,txt){
+  if(!/see Medications/.test(txt)) return txt;
+  const rows=[].concat(...m.sections.filter(x=>x.type==='meds').map(x=>x.items));
+  const low=txt.toLowerCase();
+  let pick=rows.filter(r=>low.includes(r[0].toLowerCase().split(/[ (]/)[0]));
+  if(/uterotonic/i.test(txt)) pick=rows.filter(r=>!/tranexamic/i.test(r[0]));
+  if(!pick.length) pick=rows;
+  const box=pick.map(r=>`<div class="med"><div class="n">${r[0]}</div><div class="d">${r[1]}</div>${r[2]?`<div class="x">${r[2]}</div>`:''}</div>`).join('');
+  return txt.replace(/\s*\(see Medications\)/,'') + ` <button class="dosebtn" onclick="event.preventDefault();event.stopPropagation();const b=this.nextElementSibling;b.hidden=!b.hidden;this.textContent=b.hidden?'Show doses \u25BE':'Hide doses \u25B4'">Show doses \u25BE</button><div class="dosebox" hidden>${box}</div>`;
 }
 function stripTags(s){return s.replace(/<[^>]+>/g,'');}
 function setAlgo(id,k){state.algo[id]=k;save();renderModule(M.find(x=>x.id===id));}
