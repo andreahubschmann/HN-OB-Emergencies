@@ -150,6 +150,51 @@ const CODES = {
 
 /* ---------- Clinical modules ---------- */
 const M = [
+
+/* ===== OB Triage policy ===== */
+{id:"triage",title:"OB Triage: ED and Non-OB Units",sub:"Where the patient goes",code:"obe",tile:"",
+sections:[
+ {type:"warn",text:"Holy Name policy: Triage and Obstetric Evaluation of Pregnant and Postpartum Patients in the ED and Non-Obstetric Units (draft v9). Criteria applied in order; the first criterion met determines location."},
+ {type:"list",h:"Definitions",items:[
+  "<b>Pregnant ≥ 20 weeks:</b> 20 0/7 weeks or greater. Visibly pregnant with unknown gestational age is included until gestational age is established.",
+  "<b>Postpartum:</b> within 6 weeks (42 days) of delivery at ≥ 20 0/7 weeks, including stillbirth.",
+  "<b>Unstable:</b> requiring emergency stabilization in the judgment of ED clinical staff (hemodynamic compromise, major trauma, airway compromise).",
+  "<b>Acute medical emergency:</b> chest pain, shortness of breath, stroke symptoms, altered mental status, syncope, sepsis, overdose, suicidal ideation.",
+  "<b>Maternal early warning criteria:</b> SBP < 90 or ≥ 160; DBP ≥ 110; HR < 50 or > 120; RR < 10 or > 30; SpO2 < 95% on room air; new agitation, confusion or unresponsiveness."]},
+ {type:"list",h:"Triage location (first criterion met)",items:[
+  "<b>1. Unstable or major trauma, any GA:</b> ED. Pregnant ≥ 20 wk or unstable postpartum: ED activates OB Emergency. Unsafe to transport: stabilize in place.",
+  "<b>2. ≥ 20 wk or postpartum with chest pain, SOB or other acute medical/cardiopulmonary emergency:</b> ED. Obstetric consultation required.",
+  "<b>3. ≥ 20 wk or postpartum, any other complaint:</b> LDRP (includes stable EMS arrivals). Exception: triage RN may keep a clearly non-obstetric complaint in the ED.",
+  "<b>4. Pregnant < 20 wk:</b> ED. May be managed on LDRP at ED provider discretion after discussion with the laborist.",
+  "<b>5. Within 6 wk of pregnancy loss < 20 wk:</b> ED. OB/GYN consultation at ED provider discretion, including unstable patients.",
+  "<b>6. > 6 wk to 1 yr after delivery:</b> standard ED triage. Document delivery date (peripartum cardiomyopathy, VTE, perinatal mood disorders)."]},
+ {type:"list",h:"Complaints always evaluated on LDRP (≥ 20 wk or postpartum, stable)",items:[
+  "Abdominal pain","Contractions","Leakage of fluid / suspected rupture of membranes",
+  "Vaginal bleeding (including postpartum), any vaginal discharge, any gynecologic complaint","Severe or persistent headache",
+  "Elevated BP, visual changes, RUQ/epigastric pain, or seizure (after stabilization). Actively seizing = unstable, remains in ED. Severe-range BP treatment and magnesium are not delayed for transfer.",
+  "Decreased or absent fetal movement","Known placenta previa or other placental abnormality",
+  "Minor abdominal trauma (stable), for fetal monitoring. Assault prompts IPV screening.","Postpartum fever, or incision or perineal wound complaints"]},
+ {type:"list",h:"Transfer and handoff",items:[
+  "Vital signs on every patient before transfer to LDRP. Early warning criteria met: ED provider evaluates before transfer.",
+  "ED to LDRP: triage RN gives verbal report to LDRP RN. If an ED provider evaluated the patient, ED provider reports to laborist.",
+  "LDRP to ED: LDRP RN to ED RN, and laborist to ED attending, before transfer.",
+  "Escort: ED tech or transport; RN if contractions, labor, active vaginal bleeding or early warning criteria. Contractions: transport with delivery kit.",
+  "Scheduled induction, cesarean, NST or planned care: directly to LDRP."]},
+ {type:"list",h:"Physician notification and escalation",items:[
+  "ED provider calls the laborist phone: <b>(551) 337-2636</b>.",
+  "No response in 10 min: LDRP desk → on-call obstetric attending → Chair of OB/GYN or designee. Unstable < 20 wk: escalate immediately if laborist does not answer.",
+  "Direct ED attending-to-laborist call required: acute medical/cardiopulmonary emergency; < 20 wk considered for LDRP; LDRP-to-ED transfer; disagreement on disposition.",
+  "Disagreement: ED attending makes the final determination, documented. Care is not delayed."]},
+ {type:"list",h:"Required obstetric evaluation",items:[
+  "≥ 20 wk evaluated in the ED: in-person OB evaluation, documented before ED discharge or transfer.",
+  "Unstable (any GA or postpartum), or major trauma ≥ 20 wk: OB provider responds to ED immediately.",
+  "Acute medical/cardiopulmonary emergency (≥ 20 wk or postpartum): in-person OB consultation in the ED.",
+  "≥ 20 wk admitted to a non-OB unit: in-person OB consultation during the admission.",
+  "Non-OB inpatient unit, ≥ 20 wk or postpartum: a rapid response or code includes activation of an OB Emergency.",
+  "Imminent delivery ≥ 20 wk: stable delivers on LDRP; unstable delivers in ED with OB and LDRP team responding."]},
+ {type:"local",items:["Laborist: (551) 337-2636","LDRP: (201) 833-3125","LDRP Charge RN: (201) 961-3449"]},
+ {type:"src",items:["Holy Name Medical Center. Triage and Obstetric Evaluation of Pregnant and Postpartum Patients in the Emergency Department and Non-Obstetric Units. Draft v9, 2026."]}
+]},
 /* ===== PPH ===== */
 {id:"pph",title:"Postpartum Hemorrhage",sub:"Code Crimson",code:"crimson",tile:"t-crimson",
 sections:[
@@ -492,6 +537,31 @@ function htnChain(first){
   return N;
 }
 const FLOWS={
+
+ triage:{nodes:[
+  {id:'t0',t:'ask',q:'Unstable or major trauma? (any gestational age)',y:'u1',no:'t1'},
+  {id:'u1',t:'ask',q:'Pregnant ≥ 20 weeks, or postpartum (≤ 6 weeks) and unstable?',y:'u2',no:'u3'},
+  {id:'u2',t:'do',x:'ED. Activate OB Emergency: dial 0.',n:'Serves as notification of the obstetric attending. OB provider and LDRP team respond to the ED immediately. Unsafe to transport: stabilize in place.',call:'obe',next:'end'},
+  {id:'u3',t:'ask',q:'Pregnant < 20 weeks?',y:'u4',no:'u5'},
+  {id:'u4',t:'do',x:'ED. ED attending calls laborist directly; OB provider responds to the ED immediately.',n:'No answer: escalate immediately (LDRP desk, on-call OB attending, Chair).',tel:'laborist',next:'end'},
+  {id:'u5',t:'do',x:'ED. OB/GYN consultation at ED provider discretion.',n:'Includes unstable patients within 6 weeks of a pregnancy loss < 20 weeks.',next:'end'},
+  {id:'t1',t:'ask',q:'Pregnant ≥ 20 weeks, or postpartum ≤ 6 weeks?',y:'t2',no:'t5'},
+  {id:'t2',t:'ask',q:'Chest pain, shortness of breath, or other acute medical or cardiopulmonary emergency?',y:'t3',no:'t4'},
+  {id:'t3',t:'do',x:'ED. In-person obstetric consultation required.',n:'ED attending calls the laborist directly.',tel:'laborist',next:'end'},
+  {id:'t4',t:'ask',q:'Complaint on the always-LDRP list?',y:'w1',no:'t4b',n:'Abdominal pain; contractions; leakage of fluid; vaginal bleeding/discharge/GYN complaint; severe headache; elevated BP, visual changes, RUQ/epigastric pain, seizure; decreased fetal movement; known previa/placental abnormality; minor abdominal trauma; postpartum fever or wound complaint.'},
+  {id:'t4b',t:'ask',q:'Clearly non-obstetric complaint? (uncertainty favors LDRP)',y:'t4c',no:'w1'},
+  {id:'t4c',t:'do',x:'ED, at triage RN discretion.',n:'Pregnant ≥ 20 weeks: in-person obstetric evaluation documented before ED discharge or transfer. Call laborist.',tel:'laborist',next:'end'},
+  {id:'w1',t:'ask',q:'Meets maternal early warning criteria?',n:'SBP < 90 or ≥ 160; DBP ≥ 110; HR < 50 or > 120; RR < 10 or > 30; SpO2 < 95% RA; new agitation, confusion or unresponsiveness.',y:'w2',no:'l1'},
+  {id:'w2',t:'ask',q:'ED provider evaluation before transfer: unstable?',y:'u2',no:'l1'},
+  {id:'l1',t:'do',x:'LDRP. Triage RN gives verbal report to LDRP RN.',n:'Vital signs before transfer. If an ED provider evaluated the patient, ED provider reports to laborist. Severe-range BP treatment and magnesium are not delayed for transfer.'},
+  {id:'l2',t:'do',x:'Escort: RN if contractions, labor, active vaginal bleeding, or early warning criteria; otherwise ED tech or transport.',n:'Contractions: transport with a delivery kit.',next:'end'},
+  {id:'t5',t:'ask',q:'Pregnant < 20 weeks?',y:'t6',no:'t7'},
+  {id:'t6',t:'do',x:'ED. May be managed on LDRP at ED provider discretion after direct discussion with the laborist.',tel:'laborist',next:'end'},
+  {id:'t7',t:'ask',q:'Within 6 weeks of a pregnancy loss < 20 weeks (miscarriage, ectopic, termination)?',y:'u5',no:'t8'},
+  {id:'t8',t:'ask',q:'More than 6 weeks and up to 1 year after delivery?',y:'t9',no:'t10'},
+  {id:'t9',t:'do',x:'Standard ED triage. Document the delivery date.',n:'Consider peripartum cardiomyopathy, VTE, perinatal mood disorders.',next:'end'},
+  {id:'t10',t:'do',x:'Outside the scope of this policy. Standard ED triage.',next:'end'},
+  {id:'end',t:'end',x:'Triage disposition reached.'}]},
  pph:{nodes:[
   {id:'p1',t:'do',x:'Call Code Crimson: dial 0, state location.',n:'Activates blood bank. MTP is a separate call through the operator.'},
   {id:'p2',t:'do',x:'Assign roles: leader, QBL/recorder, medications, communication.'},
@@ -673,8 +743,8 @@ function renderGuided(m){
   const hasDoses=m.sections.some(s=>s.type==='meds'||s.type==='algo');
   const extra=`<div class="grow">${g.hist.length?`<button class="gb sec" onclick="gBack('${m.id}')">\u2190 Back</button>`:''}${hasDoses?`<button class="gb sec" onclick="showDoses('${m.id}')">Doses</button>`:''}<button class="gb sec" onclick="gRestart('${m.id}')">Restart</button></div>`;
   let body='';
-  if(n.t==='do') body=`<div class="gnum">${n.hdr||m.title}${g.pick?' \u00b7 '+g.pick:''}</div><div class="gtxt">${n.x}</div>${n.n?`<div class="gnote">${n.n}</div>`:''}<div class="gbtns">${n.call?`<button class="gb yes" onclick="callCode('${n.call}')">CALL ${CODES[n.call].name.toUpperCase()}</button>`:''}<button class="gb" onclick="gNext('${m.id}',null,'Done')">Done \u2713</button>${extra}</div>`;
-  if(n.t==='ask') body=`<div class="gnum">Decision</div><div class="gtxt gq">${n.q}</div><div class="gbtns"><div class="grow"><button class="gb yes" onclick="gNext('${m.id}','${n.y}','Yes')">YES</button><button class="gb no" onclick="gNext('${m.id}','${n.no}','No')">NO</button></div>${extra}</div>`;
+  if(n.t==='do') body=`<div class="gnum">${n.hdr||m.title}${g.pick?' \u00b7 '+g.pick:''}</div><div class="gtxt">${n.x}</div>${n.n?`<div class="gnote">${n.n}</div>`:''}<div class="gbtns">${n.call?`<button class="gb yes" onclick="callCode('${n.call}')">CALL ${CODES[n.call].name.toUpperCase()}</button>`:''}${n.tel?`<a class="gb no" style="text-align:center;text-decoration:none" href="tel:${HN[n.tel].tel}">Call laborist ${HN[n.tel].label}</a>`:''}<button class="gb" onclick="gNext('${m.id}',null,'Done')">Done \u2713</button>${extra}</div>`;
+  if(n.t==='ask') body=`<div class="gnum">Decision</div><div class="gtxt gq">${n.q}</div>${n.n?`<div class="gnote">${n.n}</div>`:''}<div class="gbtns"><div class="grow"><button class="gb yes" onclick="gNext('${m.id}','${n.y}','Yes')">YES</button><button class="gb no" onclick="gNext('${m.id}','${n.no}','No')">NO</button></div>${extra}</div>`;
   if(n.t==='wait'||n.t==='at'){
     if(n.t==='wait'&&!n.sec){ setTimeout(()=>gNext(m.id,null,'skip'),0); return ''; }
     if(n.t==='at'&&!state.start){state.start=Date.now();save();updClock();}
