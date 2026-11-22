@@ -176,13 +176,13 @@ sections:[
   "Minor abdominal trauma (stable), for fetal monitoring. Assault prompts IPV screening.","Postpartum fever, or incision or perineal wound complaints"]},
  {type:"list",h:"Transfer and handoff",items:[
   "Vital signs on every patient before transfer to LDRP. Early warning criteria met: ED provider evaluates before transfer.",
-  "ED to LDRP: triage RN gives verbal report to LDRP RN. If an ED provider evaluated the patient, ED provider reports to laborist.",
+  "ED to LDRP: triage RN gives verbal report to LDRP RN (Charge RN "+telA("charge")+"). If an ED provider evaluated the patient, ED provider reports to laborist.",
   "LDRP to ED: LDRP RN to ED RN, and laborist to ED attending, before transfer.",
   "Escort: ED tech or transport; RN if contractions, labor, active vaginal bleeding or early warning criteria. Contractions: transport with delivery kit.",
   "Scheduled induction, cesarean, NST or planned care: directly to LDRP."]},
  {type:"list",h:"Physician notification and escalation",items:[
-  "ED provider calls the laborist phone: <b>(551) 337-2636</b>.",
-  "No response in 10 min: LDRP desk → on-call obstetric attending → Chair of OB/GYN or designee. Unstable < 20 wk: escalate immediately if laborist does not answer.",
+  "ED provider calls the laborist phone: "+telA("laborist")+".",
+  "No response in 10 min: LDRP desk ("+telA("ldrp")+") → on-call obstetric attending → Chair of OB/GYN or designee. Unstable < 20 wk: escalate immediately if laborist does not answer.",
   "Direct ED attending-to-laborist call required: acute medical/cardiopulmonary emergency; < 20 wk considered for LDRP; LDRP-to-ED transfer; disagreement on disposition.",
   "Disagreement: ED attending makes the final determination, documented. Care is not delayed."]},
  {type:"list",h:"Required obstetric evaluation",items:[
@@ -192,7 +192,7 @@ sections:[
   "≥ 20 wk admitted to a non-OB unit: in-person OB consultation during the admission.",
   "Non-OB inpatient unit, ≥ 20 wk or postpartum: a rapid response or code includes activation of an OB Emergency.",
   "Imminent delivery ≥ 20 wk: stable delivers on LDRP; unstable delivers in ED with OB and LDRP team responding."]},
- {type:"local",items:["Laborist: (551) 337-2636","LDRP: (201) 833-3125","LDRP Charge RN: (201) 961-3449"]},
+ {type:"local",items:["Laborist: "+telA("laborist"),"LDRP desk: "+telA("ldrp"),"LDRP Charge RN: "+telA("charge")]},
  {type:"src",items:["Holy Name Medical Center. Triage and Obstetric Evaluation of Pregnant and Postpartum Patients in the Emergency Department and Non-Obstetric Units. Draft v9, 2026."]}
 ]},
 /* ===== PPH ===== */
@@ -543,7 +543,7 @@ const FLOWS={
   {id:'u1',t:'ask',q:'Pregnancy status?',yl:'Pregnant \u2265 20 weeks, or postpartum \u2264 6 weeks',nl:'Pregnant < 20 weeks, or other',y:'u2',no:'u3'},
   {id:'u2',t:'do',x:'ED. Activate OB Emergency: dial 0.',n:'Serves as notification of the obstetric attending. OB provider and LDRP team respond to the ED immediately. Unsafe to transport: stabilize in place.',call:'obe',next:'end'},
   {id:'u3',t:'ask',q:'Which applies?',yl:'Pregnant < 20 weeks',nl:'Pregnancy loss < 20 weeks (within 6 weeks), or other',y:'u4',no:'u5'},
-  {id:'u4',t:'do',x:'ED. ED attending calls laborist directly; OB provider responds to the ED immediately.',n:'No answer: escalate immediately (LDRP desk, on-call OB attending, Chair).',tel:'laborist',next:'end'},
+  {id:'u4',t:'do',x:'ED. ED attending calls laborist directly; OB provider responds to the ED immediately.',n:'No answer: escalate immediately (LDRP desk, on-call OB attending, Chair).',tel:['laborist','ldrp'],next:'end'},
   {id:'u5',t:'do',x:'ED. OB/GYN consultation at ED provider discretion.',n:'Includes unstable patients within 6 weeks of a pregnancy loss < 20 weeks.',next:'end'},
   {id:'t1',t:'ask',q:'Pregnancy status?',n:'Visibly pregnant with unknown gestational age counts as \u2265 20 weeks. Postpartum: within 42 days of delivery at \u2265 20 weeks, including stillbirth.',yl:'Pregnant \u2265 20 weeks, or postpartum \u2264 6 weeks',nl:'Other',y:'t2',no:'t5'},
   {id:'t2',t:'ask',q:'Chest pain, shortness of breath, or another acute medical emergency?',n:'Examples: stroke symptoms, altered mental status, syncope, sepsis, overdose, suicidal ideation.',y:'t3',no:'t4'},
@@ -553,8 +553,8 @@ const FLOWS={
   {id:'t4c',t:'do',x:'ED, at triage RN discretion.',n:'Pregnant ≥ 20 weeks: in-person obstetric evaluation documented before ED discharge or transfer. Call laborist.',tel:'laborist',next:'end'},
   {id:'w1',t:'ask',q:'Any maternal early warning sign?',n:'SBP < 90 or ≥ 160; DBP ≥ 110; HR < 50 or > 120; RR < 10 or > 30; SpO2 < 95% RA; new agitation, confusion or unresponsiveness.',y:'w2',no:'l1'},
   {id:'w2',t:'ask',q:'ED provider evaluates before transfer. Patient condition?',yl:'Unstable',nl:'Stable',y:'u2',no:'l1'},
-  {id:'l1',t:'do',x:'LDRP. Triage RN gives verbal report to LDRP RN.',n:'Vital signs before transfer. If an ED provider evaluated the patient, ED provider reports to laborist. Severe-range BP treatment and magnesium are not delayed for transfer.'},
-  {id:'l2',t:'do',x:'Escort: RN if contractions, labor, active vaginal bleeding, or early warning criteria; otherwise ED tech or transport.',n:'Contractions: transport with a delivery kit.',next:'end'},
+  {id:'l1',t:'do',tel:['charge','laborist'],x:'LDRP. Triage RN gives verbal report to LDRP RN.',n:'Vital signs before transfer. If an ED provider evaluated the patient, ED provider reports to laborist. Severe-range BP treatment and magnesium are not delayed for transfer.'},
+  {id:'l2',t:'do',tel:'charge',x:'Escort: RN if contractions, labor, active vaginal bleeding, or early warning criteria; otherwise ED tech or transport.',n:'Contractions: transport with a delivery kit.',next:'end'},
   {id:'t5',t:'ask',q:'Is the patient pregnant < 20 weeks?',y:'t6',no:'t7'},
   {id:'t6',t:'do',x:'ED. May be managed on LDRP at ED provider discretion after direct discussion with the laborist.',tel:'laborist',next:'end'},
   {id:'t7',t:'ask',q:'Pregnancy loss < 20 weeks within the last 6 weeks?',n:'Miscarriage, ectopic pregnancy, or termination.',y:'u5',no:'t8'},
@@ -727,6 +727,9 @@ function stopAlarm(){ if(alarmT){clearInterval(alarmT);alarmT=null;} }
 function ackAlarm(id){ stopAlarm(); closeOv(); if(location.hash.slice(1)!==id){ state.mode[id]='guided'; save(); go(id);} }
 setInterval(()=>{ for(const id in (state.g||{})){ const g=state.g[id]; if(g&&g.waitEnd&&!g.alarmed&&Date.now()>=g.waitEnd){ g.alarmed=true; save(); const m=M.find(x=>x.id===id); const N=m?nodesFor(m):null; const n=N&&N.find(x=>x.id===g.cur); startAlarm(id,(n&&n.x)||'Recheck'); } } },500);
 
+const TEL_LBL={laborist:'Call laborist',charge:'Call LDRP Charge RN',ldrp:'Call LDRP desk',switchboard:'Call switchboard'};
+function telBtn(k){return `<a class="gb no" style="text-align:center;text-decoration:none;font-size:18px" href="tel:${HN[k].tel}">\u260E ${TEL_LBL[k]} ${HN[k].label}</a>`;}
+function telA(k){return `<a href="tel:${HN[k].tel}" style="color:var(--navy);font-weight:800">${HN[k].label}</a>`;}
 function setMode(id,md){state.mode[id]=md;save();renderModule(M.find(x=>x.id===id));}
 let waitT=null;
 function gs(m){return state.g[m.id]||(state.g[m.id]={cur:null,hist:[]});}
@@ -743,7 +746,7 @@ function renderGuided(m){
   const hasDoses=m.sections.some(s=>s.type==='meds'||s.type==='algo');
   const extra=`<div class="grow">${g.hist.length?`<button class="gb sec" onclick="gBack('${m.id}')">\u2190 Back</button>`:''}${hasDoses?`<button class="gb sec" onclick="showDoses('${m.id}')">Doses</button>`:''}<button class="gb sec" onclick="gRestart('${m.id}')">Restart</button></div>`;
   let body='';
-  if(n.t==='do') body=`<div class="gnum">${n.hdr||m.title}${g.pick?' \u00b7 '+g.pick:''}</div><div class="gtxt">${n.x}</div>${n.n?`<div class="gnote">${n.n}</div>`:''}<div class="gbtns">${n.call?`<button class="gb yes" onclick="callCode('${n.call}')">CALL ${CODES[n.call].name.toUpperCase()}</button>`:''}${n.tel?`<a class="gb no" style="text-align:center;text-decoration:none" href="tel:${HN[n.tel].tel}">Call laborist ${HN[n.tel].label}</a>`:''}<button class="gb" onclick="gNext('${m.id}',null,'Done')">Done \u2713</button>${extra}</div>`;
+  if(n.t==='do') body=`<div class="gnum">${n.hdr||m.title}${g.pick?' \u00b7 '+g.pick:''}</div><div class="gtxt">${n.x}</div>${n.n?`<div class="gnote">${n.n}</div>`:''}<div class="gbtns">${n.call?`<button class="gb yes" onclick="callCode('${n.call}')">CALL ${CODES[n.call].name.toUpperCase()}</button>`:''}${n.tel?[].concat(n.tel).map(k=>telBtn(k)).join(''):''}<button class="gb" onclick="gNext('${m.id}',null,'Done')">Done \u2713</button>${extra}</div>`;
   if(n.t==='ask') body=`<div class="gnum">Decision</div><div class="gtxt gq">${n.q}</div>${n.n?`<div class="gnote">${n.n}</div>`:''}<div class="gbtns"><div class="grow" style="${n.yl?'flex-direction:column':''}"><button class="gb ${n.yl?'no':'yes'}" style="${n.yl?'font-size:18px':''}" onclick="gNext('${m.id}','${n.y}','${n.yl?n.yl.replace(/'/g,''):'Yes'}')">${n.yl||'YES'}</button><button class="gb no" style="${n.nl?'font-size:18px':''}" onclick="gNext('${m.id}','${n.no}','${n.nl?n.nl.replace(/'/g,''):'No'}')">${n.nl||'NO'}</button></div>${extra}</div>`;
   if(n.t==='wait'||n.t==='at'){
     if(n.t==='wait'&&!n.sec){ setTimeout(()=>gNext(m.id,null,'skip'),0); return ''; }
