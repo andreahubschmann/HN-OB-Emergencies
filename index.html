@@ -653,7 +653,12 @@ function nodesFor(m){const f=FLOWS[m.id]; if(!f) return autoNodes(m); if(f.nodes
 /* ---------- State ---------- */
 let state = {start:null, log:[], cur:null, algo:{}, g:{}, mode:{}};
 try{const s=JSON.parse(localStorage.getItem('hnobe')||'null'); if(s) state=Object.assign(state,s);}catch(e){}
-state.g=state.g||{};state.mode=state.mode||{};
+state.g=state.g||{};state.mode=state.mode||{};state.ev=state.ev||{};
+delete state.start; delete state.stop; delete state.log;
+/* Event clock and log are kept per emergency so they never carry over between emergencies. */
+function evKey(){const h=location.hash.slice(1); if(M.find(x=>x.id===h)){state.lastMod=h;return h;} return state.lastMod||'_';}
+function ev(){const k=evKey(); return state.ev[k]||(state.ev[k]={start:null,stop:null,log:[]});}
+['start','stop','log'].forEach(f=>Object.defineProperty(state,f,{enumerable:false,configurable:true,get(){return ev()[f];},set(v){ev()[f]=v;}}));
 function save(){try{localStorage.setItem('hnobe',JSON.stringify(state));}catch(e){}}
 
 /* ---------- Rendering ---------- */
@@ -671,9 +676,9 @@ function render(){
   const m=M.find(x=>x.id===h);
   document.getElementById('codes').style.display=m?'none':'';
   if(m){ clock.style.display='flex'; renderModule(m); }
-  else { clock.style.display = state.start ? 'flex':'none';
+  else { clock.style.display = 'none';
     if(h==='contacts') renderContacts(); else if(h==='log') {clock.style.display='flex';renderLog();} else if(h==='about') renderAbout(); else renderHome(); }
-  window.scrollTo(0,0);
+  updClock(); window.scrollTo(0,0);
 }
 
 function renderHome(){
@@ -762,7 +767,7 @@ function renderGuided(m){
   return callBtn+`<div class="gcard"><div class="gprog"><i style="width:${pct}%"></i></div>${body}</div>`;
 }
 function pick(id,k){unlockAudio();const m=M.find(x=>x.id===id);const g=gs(m);g.pick=k;g.cur=null;g.hist=[];logIt(m.title+': '+k+' algorithm selected');save();renderModule(m);}
-function logIt(t){state.log.push({k:'g-'+Date.now()+Math.random(),t:stamp(),txt:t});}
+function logIt(t){if(!state.start){state.start=Date.now();updClock();}state.log.push({k:'g-'+Date.now()+Math.random(),t:stamp(),txt:t});}
 function gNext(id,to,ans){
   const m=M.find(x=>x.id===id),g=gs(m),N=nodesFor(m),i=N.findIndex(n=>n.id===g.cur),n=N[i];
   if(ans!=='skip') logIt(n.t==='ask'? n.q+' '+(ans.length>3?ans:ans.toUpperCase()) : (n.t==='do'? n.x : n.x+' ('+ans+')'));
@@ -808,7 +813,7 @@ function renderContacts(){
 function renderLog(){
   document.getElementById('hTitle').textContent='Event Log';
   const txt=state.log.map(l=>`${l.t}  ${l.txt}`).join('\n')||'No steps recorded.';
-  V.innerHTML=`<div class="card"><h3>Time-stamped steps</h3><div class="small" style="margin-bottom:6px">${state.start?'Times are elapsed from event start.':'Clock not started; clock times shown.'} Stored only on this device. No patient identifiers.</div><div class="log" id="logtxt">${txt.replace(/</g,'&lt;')}</div>
+  V.innerHTML=`<div class="card"><h3>${(M.find(x=>x.id===state.lastMod)||{title:'Event'}).title}: time-stamped steps</h3><div class="small" style="margin-bottom:6px">${state.start?'Times are elapsed from event start.':'Clock not started; clock times shown.'} Stored only on this device. No patient identifiers.</div><div class="log" id="logtxt">${txt.replace(/</g,'&lt;')}</div>
   <div style="display:flex;gap:8px;margin-top:10px"><button class="b-go" style="flex:1;border:0;border-radius:8px;padding:12px;font:inherit;font-weight:700" onclick="copyLog()">Copy</button><button class="b-gray" style="flex:1;border:0;border-radius:8px;padding:12px;font:inherit;font-weight:700" onclick="confirmReset()">Clear event</button></div><div class="small" id="cpmsg"></div></div>`;
 }
 function copyLog(){const t=document.getElementById('logtxt').innerText;navigator.clipboard.writeText(t).then(()=>{document.getElementById('cpmsg').textContent='Copied.';}).catch(()=>{document.getElementById('cpmsg').textContent='Copy unavailable; select text manually.';});}
@@ -817,7 +822,7 @@ function confirmReset(){
   <button class="callbtn" style="background:var(--obe);border:0;width:100%;font:inherit;font-weight:800;font-size:18px" onclick="resetEvent()">Clear</button>
   <button class="callbtn" style="background:#E7E9ED;color:#222;border:0;width:100%;font:inherit;font-weight:800;font-size:18px" onclick="closeOv()">Cancel</button>`);
 }
-function resetEvent(){stopAlarm();wakeOff();state.start=null;state.stop=null;state.log=[];state.g={};save();closeOv();updClock();render();}
+function resetEvent(){stopAlarm();wakeOff();const k=evKey();state.ev[k]={start:null,stop:null,log:[]};delete state.g[k];save();closeOv();updClock();render();}
 
 function renderAbout(){
   document.getElementById('hTitle').textContent='About';
@@ -836,10 +841,11 @@ function callCode(k){
   <a class="callbtn" style="background:${c.color}" href="tel:${HN.switchboard.tel}">Call switchboard ${HN.switchboard.label}</a>
   <div class="small">${c.when}</div>
   <button class="callbtn" style="background:#E7E9ED;color:#222;border:0;width:100%;font:inherit;font-weight:800;font-size:17px" onclick="closeOv()">Close</button>`);
-  state.log.push({k:'code-'+Date.now(),t:stamp(),txt:c.name+' called'}); save();
+  if(!state.start){state.start=Date.now();}
+  state.log.push({k:'code-'+Date.now(),t:stamp(),txt:c.name+' called'}); save(); updClock();
 }
 function openOv(h){document.getElementById('sheet').innerHTML=h;document.getElementById('ov').classList.add('on');}
-function closeOv(){document.getElementById('ov').classList.remove('on'); if(M.find(x=>x.id===location.hash.slice(1))) render(); else document.getElementById('clock').style.display=state.start?'flex':document.getElementById('clock').style.display;}
+function closeOv(){document.getElementById('ov').classList.remove('on'); if(M.find(x=>x.id===location.hash.slice(1))) render(); else document.getElementById('clock').style.display=(location.hash==='#log'&&state.start)?'flex':document.getElementById('clock').style.display;}
 
 /* ---------- Event clock ---------- */
 function toggleClock(){ unlockAudio(); if(state.start&&!state.stop){ state.stop=Date.now(); state.log.push({k:'stop-'+Date.now(),t:fmt(state.stop-state.start),txt:'Event clock stopped'}); save(); updClock(); return; } if(state.start){ confirmReset(); } else { state.start=Date.now(); state.log.push({k:'start-'+Date.now(),t:'00:00',txt:'Event clock started'}); save(); updClock(); } }
