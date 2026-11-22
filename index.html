@@ -131,6 +131,7 @@ const HN = {
   switchboard: {label:"(201) 833-3000", tel:"+12018333000"},
   ldrp: {label:"(201) 833-3125", tel:"+12018333125"},
   charge: {label:"(201) 961-3449", tel:"+12019613449"},
+  laborist: {label:"(551) 337-2636", tel:"+15513372636"},
 };
 const PH = s => `<span class="ph">${s}</span>`;
 const CODES = {
@@ -717,7 +718,7 @@ function renderContacts(){
   const row=(l,o)=>`<tr><td>${l}</td><td style="text-align:right"><a href="tel:${o.tel}">${o.label}</a></td></tr>`;
   V.innerHTML=`<div class="card"><h3>How to call a code</h3><ul><li><b>Hospital phone:</b> dial <b>0</b>, state the code and location.</li><li><b>Cell phone:</b> call the switchboard ${HN.switchboard.label}, state the code and location.</li><li>All codes are an overhead page plus alerts to assigned team members.</li></ul></div>
   ${Object.values(CODES).map(c=>`<div class="card"><h3 style="color:${c.color}">${c.name}</h3><p style="margin:0 0 6px">${c.when}</p>${c.team?`<div class="small" style="font-weight:700;margin-top:6px">Team alerted</div><ul>${c.team.map(t=>`<li>${t}</li>`).join('')}</ul>`:''}</div>`).join('')}
-  <div class="card"><h3>Numbers</h3><table class="ct">${row('Main switchboard',HN.switchboard)}${row('LDRP',HN.ldrp)}${row('LDRP Charge RN',HN.charge)}</table></div>
+  <div class="card"><h3>Numbers</h3><table class="ct">${row('Laborist',HN.laborist)}${row('Main switchboard',HN.switchboard)}${row('LDRP',HN.ldrp)}${row('LDRP Charge RN',HN.charge)}</table></div>
   <div class="small">Source: Holy Name Practice Alert 315 (Obstetric Emergency; Code Pink; Code Crimson).</div>`;
 }
 
