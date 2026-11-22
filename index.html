@@ -539,26 +539,26 @@ function htnChain(first){
 const FLOWS={
 
  triage:{nodes:[
-  {id:'t0',t:'ask',q:'Unstable or major trauma? (any gestational age)',y:'u1',no:'t1'},
-  {id:'u1',t:'ask',q:'Pregnant ≥ 20 weeks, or postpartum (≤ 6 weeks) and unstable?',y:'u2',no:'u3'},
+  {id:'t0',t:'ask',q:'Patient condition?',n:'Any gestational age. Unstable: needs emergency stabilization (hemodynamic compromise, airway compromise).',yl:'Unstable or major trauma',nl:'Stable',y:'u1',no:'t1'},
+  {id:'u1',t:'ask',q:'Pregnancy status?',yl:'Pregnant \u2265 20 weeks, or postpartum \u2264 6 weeks',nl:'Pregnant < 20 weeks, or other',y:'u2',no:'u3'},
   {id:'u2',t:'do',x:'ED. Activate OB Emergency: dial 0.',n:'Serves as notification of the obstetric attending. OB provider and LDRP team respond to the ED immediately. Unsafe to transport: stabilize in place.',call:'obe',next:'end'},
-  {id:'u3',t:'ask',q:'Pregnant < 20 weeks?',y:'u4',no:'u5'},
+  {id:'u3',t:'ask',q:'Which applies?',yl:'Pregnant < 20 weeks',nl:'Pregnancy loss < 20 weeks (within 6 weeks), or other',y:'u4',no:'u5'},
   {id:'u4',t:'do',x:'ED. ED attending calls laborist directly; OB provider responds to the ED immediately.',n:'No answer: escalate immediately (LDRP desk, on-call OB attending, Chair).',tel:'laborist',next:'end'},
   {id:'u5',t:'do',x:'ED. OB/GYN consultation at ED provider discretion.',n:'Includes unstable patients within 6 weeks of a pregnancy loss < 20 weeks.',next:'end'},
-  {id:'t1',t:'ask',q:'Pregnant ≥ 20 weeks, or postpartum ≤ 6 weeks?',y:'t2',no:'t5'},
-  {id:'t2',t:'ask',q:'Chest pain, shortness of breath, or other acute medical or cardiopulmonary emergency?',y:'t3',no:'t4'},
+  {id:'t1',t:'ask',q:'Pregnancy status?',n:'Visibly pregnant with unknown gestational age counts as \u2265 20 weeks. Postpartum: within 42 days of delivery at \u2265 20 weeks, including stillbirth.',yl:'Pregnant \u2265 20 weeks, or postpartum \u2264 6 weeks',nl:'Other',y:'t2',no:'t5'},
+  {id:'t2',t:'ask',q:'Chest pain, shortness of breath, or another acute medical emergency?',n:'Examples: stroke symptoms, altered mental status, syncope, sepsis, overdose, suicidal ideation.',y:'t3',no:'t4'},
   {id:'t3',t:'do',x:'ED. In-person obstetric consultation required.',n:'ED attending calls the laborist directly.',tel:'laborist',next:'end'},
-  {id:'t4',t:'ask',q:'Complaint on the always-LDRP list?',y:'w1',no:'t4b',n:'Abdominal pain; contractions; leakage of fluid; vaginal bleeding/discharge/GYN complaint; severe headache; elevated BP, visual changes, RUQ/epigastric pain, seizure; decreased fetal movement; known previa/placental abnormality; minor abdominal trauma; postpartum fever or wound complaint.'},
-  {id:'t4b',t:'ask',q:'Clearly non-obstetric complaint? (uncertainty favors LDRP)',y:'t4c',no:'w1'},
+  {id:'t4',t:'ask',q:'Is the complaint on this LDRP list?',y:'w1',no:'t4b',n:'Abdominal pain; contractions; leakage of fluid; vaginal bleeding/discharge/GYN complaint; severe headache; elevated BP, visual changes, RUQ/epigastric pain, seizure; decreased fetal movement; known previa/placental abnormality; minor abdominal trauma; postpartum fever or wound complaint.'},
+  {id:'t4b',t:'ask',q:'Type of complaint?',n:'If unsure, send to LDRP.',yl:'Obstetric, or unsure',nl:'Clearly non-obstetric',y:'w1',no:'t4c'},
   {id:'t4c',t:'do',x:'ED, at triage RN discretion.',n:'Pregnant ≥ 20 weeks: in-person obstetric evaluation documented before ED discharge or transfer. Call laborist.',tel:'laborist',next:'end'},
-  {id:'w1',t:'ask',q:'Meets maternal early warning criteria?',n:'SBP < 90 or ≥ 160; DBP ≥ 110; HR < 50 or > 120; RR < 10 or > 30; SpO2 < 95% RA; new agitation, confusion or unresponsiveness.',y:'w2',no:'l1'},
-  {id:'w2',t:'ask',q:'ED provider evaluation before transfer: unstable?',y:'u2',no:'l1'},
+  {id:'w1',t:'ask',q:'Any maternal early warning sign?',n:'SBP < 90 or ≥ 160; DBP ≥ 110; HR < 50 or > 120; RR < 10 or > 30; SpO2 < 95% RA; new agitation, confusion or unresponsiveness.',y:'w2',no:'l1'},
+  {id:'w2',t:'ask',q:'ED provider evaluates before transfer. Patient condition?',yl:'Unstable',nl:'Stable',y:'u2',no:'l1'},
   {id:'l1',t:'do',x:'LDRP. Triage RN gives verbal report to LDRP RN.',n:'Vital signs before transfer. If an ED provider evaluated the patient, ED provider reports to laborist. Severe-range BP treatment and magnesium are not delayed for transfer.'},
   {id:'l2',t:'do',x:'Escort: RN if contractions, labor, active vaginal bleeding, or early warning criteria; otherwise ED tech or transport.',n:'Contractions: transport with a delivery kit.',next:'end'},
-  {id:'t5',t:'ask',q:'Pregnant < 20 weeks?',y:'t6',no:'t7'},
+  {id:'t5',t:'ask',q:'Is the patient pregnant < 20 weeks?',y:'t6',no:'t7'},
   {id:'t6',t:'do',x:'ED. May be managed on LDRP at ED provider discretion after direct discussion with the laborist.',tel:'laborist',next:'end'},
-  {id:'t7',t:'ask',q:'Within 6 weeks of a pregnancy loss < 20 weeks (miscarriage, ectopic, termination)?',y:'u5',no:'t8'},
-  {id:'t8',t:'ask',q:'More than 6 weeks and up to 1 year after delivery?',y:'t9',no:'t10'},
+  {id:'t7',t:'ask',q:'Pregnancy loss < 20 weeks within the last 6 weeks?',n:'Miscarriage, ectopic pregnancy, or termination.',y:'u5',no:'t8'},
+  {id:'t8',t:'ask',q:'Delivered between 6 weeks and 1 year ago?',y:'t9',no:'t10'},
   {id:'t9',t:'do',x:'Standard ED triage. Document the delivery date.',n:'Consider peripartum cardiomyopathy, VTE, perinatal mood disorders.',next:'end'},
   {id:'t10',t:'do',x:'Outside the scope of this policy. Standard ED triage.',next:'end'},
   {id:'end',t:'end',x:'Triage disposition reached.'}]},
@@ -688,7 +688,7 @@ function filt(q){q=q.toLowerCase();document.querySelectorAll('#g .tile').forEach
 
 function renderModule(m){
   document.getElementById('hTitle').textContent=m.title;
-  const mode=state.mode[m.id]||'full';
+  const mode=state.mode[m.id]||(m.id==='triage'?'guided':'full');
   const tabs=`<div class="mtabs"><button class="${mode==='full'?'on':''}" onclick="setMode('${m.id}','full')">Full protocol</button><button class="${mode==='guided'?'on':''}" onclick="setMode('${m.id}','guided')">Step by step</button></div>`;
   if(mode==='guided'){V.innerHTML=tabs+renderGuided(m);return;}
   const c=CODES[m.code];
@@ -744,7 +744,7 @@ function renderGuided(m){
   const extra=`<div class="grow">${g.hist.length?`<button class="gb sec" onclick="gBack('${m.id}')">\u2190 Back</button>`:''}${hasDoses?`<button class="gb sec" onclick="showDoses('${m.id}')">Doses</button>`:''}<button class="gb sec" onclick="gRestart('${m.id}')">Restart</button></div>`;
   let body='';
   if(n.t==='do') body=`<div class="gnum">${n.hdr||m.title}${g.pick?' \u00b7 '+g.pick:''}</div><div class="gtxt">${n.x}</div>${n.n?`<div class="gnote">${n.n}</div>`:''}<div class="gbtns">${n.call?`<button class="gb yes" onclick="callCode('${n.call}')">CALL ${CODES[n.call].name.toUpperCase()}</button>`:''}${n.tel?`<a class="gb no" style="text-align:center;text-decoration:none" href="tel:${HN[n.tel].tel}">Call laborist ${HN[n.tel].label}</a>`:''}<button class="gb" onclick="gNext('${m.id}',null,'Done')">Done \u2713</button>${extra}</div>`;
-  if(n.t==='ask') body=`<div class="gnum">Decision</div><div class="gtxt gq">${n.q}</div>${n.n?`<div class="gnote">${n.n}</div>`:''}<div class="gbtns"><div class="grow"><button class="gb yes" onclick="gNext('${m.id}','${n.y}','Yes')">YES</button><button class="gb no" onclick="gNext('${m.id}','${n.no}','No')">NO</button></div>${extra}</div>`;
+  if(n.t==='ask') body=`<div class="gnum">Decision</div><div class="gtxt gq">${n.q}</div>${n.n?`<div class="gnote">${n.n}</div>`:''}<div class="gbtns"><div class="grow" style="${n.yl?'flex-direction:column':''}"><button class="gb ${n.yl?'no':'yes'}" style="${n.yl?'font-size:18px':''}" onclick="gNext('${m.id}','${n.y}','${n.yl?n.yl.replace(/'/g,''):'Yes'}')">${n.yl||'YES'}</button><button class="gb no" style="${n.nl?'font-size:18px':''}" onclick="gNext('${m.id}','${n.no}','${n.nl?n.nl.replace(/'/g,''):'No'}')">${n.nl||'NO'}</button></div>${extra}</div>`;
   if(n.t==='wait'||n.t==='at'){
     if(n.t==='wait'&&!n.sec){ setTimeout(()=>gNext(m.id,null,'skip'),0); return ''; }
     if(n.t==='at'&&!state.start){state.start=Date.now();save();updClock();}
@@ -762,7 +762,7 @@ function pick(id,k){unlockAudio();const m=M.find(x=>x.id===id);const g=gs(m);g.p
 function logIt(t){if(!state.start){state.start=Date.now();updClock();}state.log.push({k:'g-'+Date.now()+Math.random(),t:stamp(),txt:t});}
 function gNext(id,to,ans){
   const m=M.find(x=>x.id===id),g=gs(m),N=nodesFor(m),i=N.findIndex(n=>n.id===g.cur),n=N[i];
-  if(ans!=='skip') logIt(n.t==='ask'? n.q+' '+ans.toUpperCase() : (n.t==='do'? n.x : n.x+' ('+ans+')'));
+  if(ans!=='skip') logIt(n.t==='ask'? n.q+' '+(ans.length>3?ans:ans.toUpperCase()) : (n.t==='do'? n.x : n.x+' ('+ans+')'));
   unlockAudio(); stopAlarm(); g.hist.push(g.cur); g.waitEnd=null; g.alarmed=false; wakeOff();
   g.cur= to || n.next || (N[i+1]?N[i+1].id:'end');
   save(); renderModule(m); window.scrollTo(0,0);
