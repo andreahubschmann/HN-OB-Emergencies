@@ -540,12 +540,12 @@ const FLOWS={
 
  triage:{nodes:[
   {id:'t0',t:'ask',q:'Patient condition?',n:'Any gestational age. Unstable: needs emergency stabilization (hemodynamic compromise, airway compromise).',yl:'Unstable or major trauma',nl:'Stable',y:'u1',no:'t1'},
-  {id:'u1',t:'ask',q:'Pregnancy status?',yl:'Pregnant \u2265 20 weeks, or postpartum \u2264 6 weeks',nl:'Pregnant < 20 weeks, or other',y:'u2',no:'u3'},
+  {id:'u1',t:'ask',q:'Pregnancy status?',yl:'Pregnant \u2265 20 weeks, or postpartum \u2264 6 weeks',nl:'Pregnant < 20 weeks, recent pregnancy loss, or delivered > 6 weeks ago',y:'u2',no:'u3'},
   {id:'u2',t:'do',x:'ED. Activate OB Emergency: dial 0.',n:'Serves as notification of the obstetric attending. OB provider and LDRP team respond to the ED immediately. Unsafe to transport: stabilize in place.',call:'obe',next:'end'},
-  {id:'u3',t:'ask',q:'Which applies?',yl:'Pregnant < 20 weeks',nl:'Pregnancy loss < 20 weeks (within 6 weeks), or other',y:'u4',no:'u5'},
+  {id:'u3',t:'ask',q:'Which applies?',yl:'Pregnant < 20 weeks',nl:'Pregnancy loss < 20 weeks (within 6 weeks), or delivered > 6 weeks ago',y:'u4',no:'u5'},
   {id:'u4',t:'do',x:'ED. ED attending calls laborist directly; OB provider responds to the ED immediately.',n:'No answer: escalate immediately (LDRP desk, on-call OB attending, Chair).',tel:['laborist','ldrp'],next:'end'},
   {id:'u5',t:'do',x:'ED. OB/GYN consultation at ED provider discretion.',n:'Includes unstable patients within 6 weeks of a pregnancy loss < 20 weeks.',next:'end'},
-  {id:'t1',t:'ask',q:'Pregnancy status?',n:'Visibly pregnant with unknown gestational age counts as \u2265 20 weeks. Postpartum: within 42 days of delivery at \u2265 20 weeks, including stillbirth.',yl:'Pregnant \u2265 20 weeks, or postpartum \u2264 6 weeks',nl:'Other',y:'t2',no:'t5'},
+  {id:'t1',t:'ask',q:'Pregnancy status?',n:'Visibly pregnant with unknown gestational age counts as \u2265 20 weeks. Postpartum: within 42 days of delivery at \u2265 20 weeks, including stillbirth.',yl:'Pregnant \u2265 20 weeks, or postpartum \u2264 6 weeks',nl:'Pregnant < 20 weeks, recent pregnancy loss, or delivered > 6 weeks ago',y:'t2',no:'t5'},
   {id:'t2',t:'ask',q:'Chest pain, shortness of breath, or another acute medical emergency?',n:'Examples: stroke symptoms, altered mental status, syncope, sepsis, overdose, suicidal ideation.',y:'t3',no:'t4'},
   {id:'t3',t:'do',x:'ED. In-person obstetric consultation required.',n:'ED attending calls the laborist directly.',tel:'laborist',next:'end'},
   {id:'t4',t:'ask',q:'Is the complaint on this LDRP list?',y:'w1',no:'t4b',n:'Abdominal pain; contractions; leakage of fluid; vaginal bleeding/discharge/GYN complaint; severe headache; elevated BP, visual changes, RUQ/epigastric pain, seizure; decreased fetal movement; known previa/placental abnormality; minor abdominal trauma; postpartum fever or wound complaint.'},
