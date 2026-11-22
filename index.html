@@ -211,7 +211,7 @@ sections:[
   "Empty bladder (indwelling catheter).",
   "Uterotonics (see Medications).",
   "Tranexamic acid 1 g IV over 10 min (see Medications).",
-  "Inspect for lacerations, retained tissue, hematoma; identify cause (4 Ts).",
+  "Identify cause (4 Ts). <b>Tone:</b> uterine atony. <b>Trauma:</b> laceration, hematoma, uterine inversion, uterine rupture. <b>Tissue:</b> retained placenta or membranes, placenta accreta spectrum. <b>Thrombin:</b> coagulopathy (check fibrinogen).",
   "Continuous QBL, vital signs every 5 to 15 min, O2 saturation, urine output.",
   "Intrauterine tamponade: JADA (stocked on LDRP).",
   "Ongoing bleeding or instability: move to OR; anesthesia and second obstetrician.",
@@ -579,7 +579,7 @@ const FLOWS={
   {id:'u3',t:'do',x:'Hemabate (carboprost) 0.25 mg IM or intramyometrial.',n:'May repeat every 15–90 min; maximum 8 doses. Relative contraindication: hepatic, renal or cardiac disease.'},
   {id:'q3',t:'ask',q:'Bleeding controlled?',y:'mon',no:'u4'},
   {id:'u4',t:'do',x:'Misoprostol 600–1,000 micrograms oral, sublingual or rectal, once.'},
-  {id:'c1',t:'do',x:'Identify cause (4 Ts): inspect for lacerations, hematoma, retained tissue, inversion; assess coagulation.'},
+  {id:'c1',t:'do',x:'Identify cause: the 4 Ts.',n:'Tone: uterine atony. Trauma: laceration, hematoma, uterine inversion, uterine rupture. Tissue: retained placenta or membranes, placenta accreta spectrum. Thrombin: coagulopathy (check fibrinogen).'},
   {id:'q4',t:'ask',q:'Bleeding controlled?',y:'mon',no:'j1'},
   {id:'j1',t:'do',x:'Intrauterine tamponade: JADA.',n:'Stocked on LDRP. Use per device instructions.'},
   {id:'t2',t:'do',x:'Bleeding continues 30 min after first TXA dose (or resumes within 24 h): tranexamic acid second 1 g IV over 10 min.'},
@@ -762,7 +762,7 @@ function renderGuided(m){
   return callBtn+`<div class="gcard"><div class="gprog"><i style="width:${pct}%"></i></div>${body}</div>`;
 }
 function pick(id,k){unlockAudio();const m=M.find(x=>x.id===id);const g=gs(m);g.pick=k;g.cur=null;g.hist=[];logIt(m.title+': '+k+' algorithm selected');save();renderModule(m);}
-function logIt(t){if(!state.start){state.start=Date.now();updClock();}state.log.push({k:'g-'+Date.now()+Math.random(),t:stamp(),txt:t});}
+function logIt(t){state.log.push({k:'g-'+Date.now()+Math.random(),t:stamp(),txt:t});}
 function gNext(id,to,ans){
   const m=M.find(x=>x.id===id),g=gs(m),N=nodesFor(m),i=N.findIndex(n=>n.id===g.cur),n=N[i];
   if(ans!=='skip') logIt(n.t==='ask'? n.q+' '+(ans.length>3?ans:ans.toUpperCase()) : (n.t==='do'? n.x : n.x+' ('+ans+')'));
@@ -836,8 +836,7 @@ function callCode(k){
   <a class="callbtn" style="background:${c.color}" href="tel:${HN.switchboard.tel}">Call switchboard ${HN.switchboard.label}</a>
   <div class="small">${c.when}</div>
   <button class="callbtn" style="background:#E7E9ED;color:#222;border:0;width:100%;font:inherit;font-weight:800;font-size:17px" onclick="closeOv()">Close</button>`);
-  if(!state.start){state.start=Date.now();}
-  state.log.push({k:'code-'+Date.now(),t:stamp(),txt:c.name+' called'}); save(); updClock();
+  state.log.push({k:'code-'+Date.now(),t:stamp(),txt:c.name+' called'}); save();
 }
 function openOv(h){document.getElementById('sheet').innerHTML=h;document.getElementById('ov').classList.add('on');}
 function closeOv(){document.getElementById('ov').classList.remove('on'); if(M.find(x=>x.id===location.hash.slice(1))) render(); else document.getElementById('clock').style.display=state.start?'flex':document.getElementById('clock').style.display;}
